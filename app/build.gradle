@@ -1,0 +1,58 @@
+apply plugin: 'com.android.application'
+
+apply plugin: 'kotlin-android'
+
+apply plugin: 'kotlin-android-extensions'
+
+android {
+    compileSdkVersion rootProject.ext.android.compileSdkVersion
+    defaultConfig {
+        applicationId "chenrui.com.kotlindemo"
+        minSdkVersion rootProject.ext.android.minSdkVersion
+        targetSdkVersion rootProject.ext.android.targetSdkVersion
+        versionCode rootProject.ext.android.versionCode
+        versionName rootProject.ext.android.versionName
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        // 实现毛玻璃那种透明的效果需要添加的库
+        renderscriptTargetApi 19
+        renderscriptSupportModeEnabled true
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+
+    //kotlin 支持库
+    implementation rootProject.ext.kotlin
+    //support 库
+    implementation rootProject.ext.support
+    //retrofit
+    implementation rootProject.ext.retrofit
+    //rxjava
+    implementation rootProject.ext.rxJava
+    //glide
+    implementation rootProject.ext.glide
+    //logger
+    implementation rootProject.ext.logger
+    // 复杂类型适配器
+    implementation rootProject.ext.baseRecyclerViewAdapterHelper
+    // 底部菜单
+    implementation('com.flyco.tablayout:FlycoTabLayout_Lib:2.1.0@aar') {
+        exclude group: 'com.android.support', module: 'support-v4'
+    }
+    //模糊透明 View
+    implementation rootProject.ext.realtimeblurview
+    //banner
+    implementation rootProject.ext.bgaBanner
+}
