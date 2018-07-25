@@ -55,4 +55,6 @@ dependencies {
     implementation rootProject.ext.realtimeblurview
     //banner
     implementation rootProject.ext.bgaBanner
+    //下拉刷新
+    implementation rootProject.ext.smartrefresh
 }

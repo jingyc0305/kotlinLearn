@@ -1,7 +1,7 @@
 package chenrui.com.kotlindemo.kotlin.ui.fragment
 
+import android.content.Intent
 import android.os.Bundle
-import android.support.v7.widget.DividerItemDecoration
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +10,7 @@ import chenrui.com.kotlindemo.R
 import chenrui.com.kotlindemo.R.layout.empty_view
 import chenrui.com.kotlindemo.R.layout.loading_view
 import chenrui.com.kotlindemo.kotlin.adapter.HomeArticalsAdapter
+import chenrui.com.kotlindemo.kotlin.app.IntentKeyConstant
 import chenrui.com.kotlindemo.kotlin.app.MyApplication
 import chenrui.com.kotlindemo.kotlin.base.BaseFragment
 import chenrui.com.kotlindemo.kotlin.base.BasePresenter
@@ -18,13 +19,18 @@ import chenrui.com.kotlindemo.kotlin.bean.HomeBannerBean
 import chenrui.com.kotlindemo.kotlin.mpc.contract.HomeContract
 import chenrui.com.kotlindemo.kotlin.mpc.model.HomeModelImpl
 import chenrui.com.kotlindemo.kotlin.mpc.presenter.HomePresenterImpl
+import chenrui.com.kotlindemo.kotlin.ui.activity.ArticalDetailActivity
 import chenrui.com.kotlindemo.kotlin.util.NetWorkUtil
 import cn.bingoogolapple.bgabanner.BGABanner
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
+import com.scwang.smartrefresh.layout.constant.SpinnerStyle
+import com.scwang.smartrefresh.layout.footer.ClassicsFooter
+import com.scwang.smartrefresh.layout.header.ClassicsHeader
 import io.reactivex.Observable
 import kotlinx.android.synthetic.main.fragment_home.*
+
 
 /**
  * @Author:JIngYuchun
@@ -65,26 +71,47 @@ class HomeFragment : BaseFragment(),HomeContract.HomeView{
     override fun initView() {
         //绑定view 和 modle
         mPresenter.attachView(this,homeBannerModle)
-        //初始化
+        //初始化状态视图
         loadingView = layoutInflater?.inflate(loading_view,null,false)
         dataEmptyView = layoutInflater?.inflate(empty_view,null,false)
         netErrorView = layoutInflater?.inflate(R.layout.error_view,null,false)
         bannerView = layoutInflater?.inflate(R.layout.home_banner,home_banner_rv.parent as ViewGroup,false)
+        //初始化banner
         mBGABanner = bannerView?.findViewById(R.id.home_banner_content)
-        //重试加载数据 同刷新
-        netErrorView?.setOnClickListener { onFailedOrEmptyRetry() }
-        dataEmptyView?.setOnClickListener { onFailedOrEmptyRetry() }
         //初始化adpater
         homeAdapter = HomeArticalsAdapter(R.layout.item_home_artical_list,data)
         //布局管理器
         home_banner_rv.layoutManager = LinearLayoutManager(activity)
-        //默认分割线
-        home_banner_rv.addItemDecoration(DividerItemDecoration(activity,DividerItemDecoration.VERTICAL))
+        //默认分割线 如果是卡片式 就不需要了
+        //home_banner_rv.addItemDecoration(DividerItemDecoration(activity,DividerItemDecoration.VERTICAL))
         //设置适配器
         home_banner_rv.adapter = homeAdapter
         //设置头布局
         homeAdapter?.addHeaderView(bannerView)
         //设置脚部布局
+        //重试加载数据点击事件 同刷新
+        netErrorView?.setOnClickListener { onFailedOrEmptyRetry() }
+        dataEmptyView?.setOnClickListener { onFailedOrEmptyRetry() }
+        //设置item点击事件 进入详情
+        homeAdapter?.setOnItemClickListener { _, _, position ->
+            var intent = Intent(activity,ArticalDetailActivity::class.java)
+            intent.putExtra(IntentKeyConstant.artical_url_key, homeAdapter!!.data[position].link)
+            intent.putExtra(IntentKeyConstant.artical_title_key, homeAdapter!!.data[position].title)
+            startActivity(intent)
+        }
+        //设置 Header 为 贝塞尔雷达 样式
+        refreshLayout.run {
+            setRefreshHeader(ClassicsHeader(activity))
+            //设置 Footer 为 球脉冲 样式
+            setRefreshFooter(ClassicsFooter(activity!!).setSpinnerStyle(SpinnerStyle.Scale))
+            //设置 刷新监听
+            refreshLayout.setOnRefreshListener { refreshlayout ->
+                refreshlayout.finishRefresh(2000/*,false*/)//传入false表示刷新失败
+            }
+            refreshLayout.setOnLoadMoreListener { refreshlayout ->
+                refreshlayout.finishLoadMore(2000/*,false*/)//传入false表示加载失败
+            }
+        }
     }
 
     /**

@@ -32,6 +32,10 @@
             android:name=".kotlin.ui.activity.LoginActivity"
             android:label="@string/title_activity_login">
         </activity>
+        <activity
+            android:name=".kotlin.ui.activity.ArticalDetailActivity"
+            android:label="@string/title_activity_artical_detail">
+        </activity>
     </application>
 
 </manifest>

@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">KotlinDemo</string>
+    <string name="app_name">Kotlin学习</string>
     <string name="title_activity_login">登录示例</string>
-
+    <string name="title_activity_artical_detail">文章详情</string>
     <!-- Strings related to login -->
     <string name="prompt_email">邮箱</string>
     <string name="prompt_password">密码</string>

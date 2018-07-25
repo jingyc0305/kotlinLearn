@@ -16,7 +16,8 @@ ext{
             baseRvAdapter           : "2.9.40",
             realtimeblurview        : "1.1.2",
             logger                  : "2.1.1",
-            bgaBanner              : "2.2.4"
+            bgaBanner               : "2.2.4",
+            smartrefresh            : "1.0.5.1"
     ]
     //kotlin 支持库
     kotlin  = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
@@ -51,6 +52,8 @@ ext{
     realtimeblurview = "com.github.mmin18:realtimeblurview:$dependVersion.realtimeblurview"
     logger = "com.orhanobut:logger:$dependVersion.logger"
     bgaBanner = "cn.bingoogolapple:bga-banner:$dependVersion.bgaBanner"
+    smartrefresh = "com.scwang.smartrefresh:SmartRefreshLayout:$dependVersion.smartrefresh"
+
     support = support.values()
     retrofit = retrofit.values()
     rxJava = rxJava.values()
