@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import chenrui.com.kotlindemo.R
 
 /**
  * @Author:JIngYuchun
@@ -16,14 +17,17 @@ abstract class BaseFragment : Fragment(){
     /**
      * 视图是否初始化完成
      */
-    var isViewPrepare : Boolean = false
+    private var isViewPrepare : Boolean = false
     /**
      * 是否加载过数据
      */
-    var isLoadedData:Boolean = false
+    private var isLoadedData:Boolean = false
     var mDispatcher : VPDispatcher? = null
+    var dataEmptyView : View? = null
+    var netErrorView : View? = null
+    var loadingView : View? = null
     // 由子类提供当前页面所有需要绑定的Presenter。
-    open fun createPresenters():Array<out BasePresenter<*,*>>? = null
+    open fun createPresenters():Array<out BasePresenter<*>>? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -37,6 +41,10 @@ abstract class BaseFragment : Fragment(){
         super.onActivityCreated(savedInstanceState)
         isViewPrepare = true
         initView()
+        //初始化状态视图
+        loadingView = layoutInflater?.inflate(R.layout.loading_view,null,false)
+        dataEmptyView = layoutInflater?.inflate(R.layout.empty_view,null,false)
+        netErrorView = layoutInflater?.inflate(R.layout.error_view,null,false)
         //创建VP调度分发器 用于对单页面绑定多个presenter
         mDispatcher = VPDispatcher()
         //V-P生命周期绑定

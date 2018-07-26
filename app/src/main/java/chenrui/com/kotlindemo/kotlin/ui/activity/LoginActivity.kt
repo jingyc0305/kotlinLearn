@@ -14,7 +14,7 @@ import kotlinx.android.synthetic.main.activity_login.*
  */
 class LoginActivity : BaseActivity(),LoginContract.LoginView {
     val presenter = LoginPresenterImpl()
-    override fun createPresenters(): Array<out BasePresenter<*, *>>? {
+    override fun createPresenters(): Array<out BasePresenter<*>>? {
         return arrayOf(presenter)
     }
 

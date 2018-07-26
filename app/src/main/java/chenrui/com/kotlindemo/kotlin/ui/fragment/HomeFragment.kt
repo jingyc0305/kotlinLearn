@@ -7,8 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import chenrui.com.kotlindemo.R
-import chenrui.com.kotlindemo.R.layout.empty_view
-import chenrui.com.kotlindemo.R.layout.loading_view
 import chenrui.com.kotlindemo.kotlin.adapter.HomeArticalsAdapter
 import chenrui.com.kotlindemo.kotlin.app.IntentKeyConstant
 import chenrui.com.kotlindemo.kotlin.app.MyApplication
@@ -17,7 +15,6 @@ import chenrui.com.kotlindemo.kotlin.base.BasePresenter
 import chenrui.com.kotlindemo.kotlin.bean.HomeArticalBean
 import chenrui.com.kotlindemo.kotlin.bean.HomeBannerBean
 import chenrui.com.kotlindemo.kotlin.mpc.contract.HomeContract
-import chenrui.com.kotlindemo.kotlin.mpc.model.HomeModelImpl
 import chenrui.com.kotlindemo.kotlin.mpc.presenter.HomePresenterImpl
 import chenrui.com.kotlindemo.kotlin.ui.activity.ArticalDetailActivity
 import chenrui.com.kotlindemo.kotlin.util.NetWorkUtil
@@ -43,9 +40,7 @@ class HomeFragment : BaseFragment(),HomeContract.HomeView{
     var homeAdapter : HomeArticalsAdapter? = null
     var data: MutableList<HomeArticalBean.Data.Data>? = null
     var curPage : Int = 0//默认读取第一页数据
-    var dataEmptyView : View? = null
-    var netErrorView : View? = null
-    var loadingView : View? = null
+    var totalPages : Int = 0//总页数
     var bannerView : View? = null
     var mBGABanner : BGABanner? = null
     companion object {
@@ -58,23 +53,12 @@ class HomeFragment : BaseFragment(),HomeContract.HomeView{
         }
     }
 
-    /**
-     * todo // 这里 强行的又把view和model耦合在一起了 正常还是应该放在p层初始化的  后面改下
-     */
-    private val homeBannerModle: HomeModelImpl by lazy {
-        HomeModelImpl()
-    }
     override fun initLayoutResId(): Int {
         return R.layout.fragment_home
     }
 
     override fun initView() {
-        //绑定view 和 modle
-        mPresenter.attachView(this,homeBannerModle)
-        //初始化状态视图
-        loadingView = layoutInflater?.inflate(loading_view,null,false)
-        dataEmptyView = layoutInflater?.inflate(empty_view,null,false)
-        netErrorView = layoutInflater?.inflate(R.layout.error_view,null,false)
+        mPresenter.attachView(this)
         bannerView = layoutInflater?.inflate(R.layout.home_banner,home_banner_rv.parent as ViewGroup,false)
         //初始化banner
         mBGABanner = bannerView?.findViewById(R.id.home_banner_content)
@@ -99,17 +83,30 @@ class HomeFragment : BaseFragment(),HomeContract.HomeView{
             intent.putExtra(IntentKeyConstant.artical_title_key, homeAdapter!!.data[position].title)
             startActivity(intent)
         }
-        //设置 Header 为 贝塞尔雷达 样式
+        //设置 Header样式
         refreshLayout.run {
             setRefreshHeader(ClassicsHeader(activity))
-            //设置 Footer 为 球脉冲 样式
+            //设置 Footer样式
             setRefreshFooter(ClassicsFooter(activity!!).setSpinnerStyle(SpinnerStyle.Scale))
             //设置 刷新监听
-            refreshLayout.setOnRefreshListener { refreshlayout ->
-                refreshlayout.finishRefresh(2000/*,false*/)//传入false表示刷新失败
+            refreshLayout.setOnRefreshListener { refresh ->
+                mPresenter.getArticals(0)
+                refresh.setNoMoreData(false)
+                curPage = 0
+                refresh.finishRefresh(2000,true)//传入false表示刷新失败
             }
-            refreshLayout.setOnLoadMoreListener { refreshlayout ->
-                refreshlayout.finishLoadMore(2000/*,false*/)//传入false表示加载失败
+            refreshLayout.setOnLoadMoreListener { refresh ->
+                //refresh.finishLoadMore(2000/*,false*/)//传入false表示加载失败
+                curPage++
+                if(curPage <= totalPages-1){
+                    mPresenter.getArticals(curPage)
+                    refresh.finishLoadMore(1000,true,false)
+                }else if(curPage == totalPages-2){
+                    mPresenter.getArticals(curPage)
+                    //如果是最后一页了
+                    refresh.finishLoadMoreWithNoMoreData()
+                }
+
             }
         }
     }
@@ -133,7 +130,7 @@ class HomeFragment : BaseFragment(),HomeContract.HomeView{
     /**
      * 提供需要与此页面相绑定的Presenter, 可绑定多个Presenter
      */
-    override fun createPresenters(): Array<out BasePresenter<*, *>>? {
+    override fun createPresenters(): Array<out BasePresenter<*>>? {
         return arrayOf(mPresenter)
     }
 
@@ -166,9 +163,10 @@ class HomeFragment : BaseFragment(),HomeContract.HomeView{
     /**
      * 显示文章列表
      */
-    override fun showArticalList(list: MutableList<HomeArticalBean.Data.Data>) {
-        data = list
-        homeAdapter?.setNewData(list)
+    override fun showArticalList(homeArticalBean: HomeArticalBean) {
+        totalPages = homeArticalBean.data.pageCount
+        homeAdapter?.addData(homeArticalBean.data.datas)
+
     }
 
     override fun showLoading() {

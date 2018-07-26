@@ -7,17 +7,14 @@ import android.os.Bundle
  * @Date:2018/7/20
  * @Description:基础业务逻辑层Presenter P-V的绑定与解绑 [像儿女一样,在父母的管理下,去做很多事,当然只是举例,现实可能是不听话的 =.=!~]
  */
-open class BasePresenter<V : IView,M : IModle> : IPresenter<V,M> {
+open class BasePresenter<V : IView> : IPresenter<V> {
     var view : V? = null
-    var model : M? = null
-    override fun attachView(view: V,model:M) {
+    override fun attachView(view: V) {
         this.view = view
-        this.model = model
     }
 
     override fun detachView() {
         this.view = null
-        this.model = null
     }
 //    override fun getActivity():Activity{
 //        return view?.getHostActivity()?:throw RuntimeException("Could not call getActivity if the View is not attached")

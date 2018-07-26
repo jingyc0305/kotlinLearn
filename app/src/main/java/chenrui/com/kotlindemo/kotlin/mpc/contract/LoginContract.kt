@@ -16,7 +16,7 @@ interface LoginContract {
         fun onLoginFalied()
         fun onLoginError()
     }
-    interface LoginPresenter : IPresenter<LoginView,LoginModel>{
+    interface LoginPresenter : IPresenter<LoginView>{
         fun login()
         fun changePassword()
         fun sendVertifyCode()

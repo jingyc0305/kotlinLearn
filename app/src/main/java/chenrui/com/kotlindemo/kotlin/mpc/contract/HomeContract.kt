@@ -20,13 +20,13 @@ interface HomeContract {
         //显示banner
         fun showBanner(list: MutableList<HomeBannerBean.Data>)
         //显示文章列表
-        fun showArticalList(list: MutableList<HomeArticalBean.Data.Data>)
+        fun showArticalList(homeArticalBean: HomeArticalBean)
         //显示空
         fun showEmptyView()
         //显示加载失败
         fun showErrorView(msg:String)
     }
-    interface HomeBannerPresenter : IPresenter<HomeView,HomeModle> {
+    interface HomeBannerPresenter : IPresenter<HomeView> {
         //获取banner
         fun getBanners()
         fun getArticals(page:Int)

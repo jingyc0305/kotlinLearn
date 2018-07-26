@@ -1,17 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<com.scwang.smartrefresh.layout.SmartRefreshLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/project_refreshLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="导航"
-        android:textSize="36sp"
-        tools:ignore="MissingConstraints"
-        tools:layout_editor_absoluteX="156dp"
-        tools:layout_editor_absoluteY="231dp"/>
-</android.support.constraint.ConstraintLayout>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/home_project_nav_rv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#fff"
+        android:overScrollMode="never"/>
+</com.scwang.smartrefresh.layout.SmartRefreshLayout>

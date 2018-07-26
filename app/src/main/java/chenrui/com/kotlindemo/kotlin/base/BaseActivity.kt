@@ -12,7 +12,7 @@ import android.widget.Toast
 abstract class BaseActivity:AppCompatActivity(),IView{
     var mDispatcher : VPDispatcher? = null
     // 由子类提供当前页面所有需要绑定的Presenter。
-    open fun createPresenters():Array<out BasePresenter<*,*>>? = null
+    open fun createPresenters():Array<out BasePresenter<*>>? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //创建VP调度分发器 用于对单页面绑定多个presenter

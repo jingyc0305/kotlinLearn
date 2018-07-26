@@ -10,13 +10,13 @@ import android.os.Bundle
  * 这里想象是父母交给老师去支配人生的学习方面,父母引导的是成长生活方面,其实这些从老师和父母那里都能学到]
  */
 class VPDispatcher {
-    private val presenters:MutableList<BasePresenter<*,*>> = mutableListOf()
+    private val presenters:MutableList<BasePresenter<*>> = mutableListOf()
 
     // ==== 添加与移除Presenter ========
-    fun <V:IView,M:IModle> addPresenter(presenter:BasePresenter<V,M>) {
+    fun <V:IView> addPresenter(presenter:BasePresenter<V>) {
         presenters.add(presenter)
     }
-    internal fun <V:IView,M:IModle> removePresenter(presenter:BasePresenter<V,M>) {
+    internal fun <V:IView> removePresenter(presenter:BasePresenter<V>) {
         presenters.remove(presenter)
     }
 

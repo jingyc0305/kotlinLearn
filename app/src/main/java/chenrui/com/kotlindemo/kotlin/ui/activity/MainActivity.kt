@@ -4,7 +4,12 @@ import android.os.Bundle
 import android.support.v4.app.FragmentTransaction
 import chenrui.com.kotlindemo.R
 import chenrui.com.kotlindemo.kotlin.base.BaseActivity
+import chenrui.com.kotlindemo.kotlin.base.BasePresenter
+import chenrui.com.kotlindemo.kotlin.bean.ProjectTreeBean
+import chenrui.com.kotlindemo.kotlin.bean.ProjectsBean
 import chenrui.com.kotlindemo.kotlin.bean.TabEntites
+import chenrui.com.kotlindemo.kotlin.mpc.contract.HomeProjectContract
+import chenrui.com.kotlindemo.kotlin.mpc.presenter.ProjectPresenterImpl
 import chenrui.com.kotlindemo.kotlin.ui.fragment.*
 import com.flyco.tablayout.listener.CustomTabEntity
 import com.flyco.tablayout.listener.OnTabSelectListener
@@ -13,8 +18,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 /**
  * 主界面
  */
-class MainActivity: BaseActivity(){
-
+class MainActivity: BaseActivity(),HomeProjectContract.ProjectView{
     private val mTitles = arrayOf("首页","导航","项目","体系","我")
     private val mTabs = ArrayList<CustomTabEntity>()
     private var mHomeFragment:HomeFragment?=null
@@ -23,6 +27,8 @@ class MainActivity: BaseActivity(){
     private var mSystemFragment:SystemFragment?=null
     private var mPersionalFragment:PersionalFragment?=null
 
+    private var mProjectPresenter: ProjectPresenterImpl = ProjectPresenterImpl()
+    private var mProjects: MutableList<ProjectTreeBean.Data>? = null
     // 未选中的图标
     private val mIconUnSelectIds = intArrayOf(
         R.mipmap.ic_home_normal,
@@ -46,6 +52,7 @@ class MainActivity: BaseActivity(){
     override fun initLayoutResId() = R.layout.activity_main
 
     override fun initData() {
+        mProjectPresenter.getProjectTrees()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -58,6 +65,7 @@ class MainActivity: BaseActivity(){
         swichFragment(mSelectIndex)
     }
     override fun initView() {
+        mProjectPresenter.attachView(this)
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
@@ -66,6 +74,10 @@ class MainActivity: BaseActivity(){
             outState?.putInt("currTabIndex", mSelectIndex)
         }
         super.onSaveInstanceState(outState)
+    }
+
+    override fun createPresenters(): Array<out BasePresenter<*>>? {
+        return arrayOf(mProjectPresenter)
     }
     private fun swichFragment(index : Int) {
         val mTransaction = supportFragmentManager.beginTransaction()
@@ -85,7 +97,7 @@ class MainActivity: BaseActivity(){
             }
             2 -> mProjectFragment?.let {
                 mTransaction.show(it)
-            }?:ProjectFragment.getInstance(mTitles[2]).let {
+            }?:ProjectFragment.getInstance(mTitles[2],mProjects!!).let {
                 mProjectFragment = it
                 mTransaction.add(R.id.fl_container,it,"project")
             }
@@ -137,6 +149,22 @@ class MainActivity: BaseActivity(){
         mSystemFragment?.let { mTransaction.hide(it) }
         mPersionalFragment?.let { mTransaction.hide(it) }
     }
+    override fun showTrees(mProjects: MutableList<ProjectTreeBean.Data>) {
+        this.mProjects = mProjects
+    }
 
+    override fun showProjectsList(mProjectsBean: ProjectsBean) {
+    }
+
+    override fun showEmptyView() {
+    }
+
+    override fun showErrorView(msg: String) {
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mProjectPresenter.detachView()
+    }
 
 }

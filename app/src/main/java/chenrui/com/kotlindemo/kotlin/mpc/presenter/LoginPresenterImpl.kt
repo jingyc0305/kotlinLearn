@@ -3,7 +3,7 @@ package chenrui.com.kotlindemo.kotlin.mpc.presenter
 import chenrui.com.kotlindemo.kotlin.base.BasePresenter
 import chenrui.com.kotlindemo.kotlin.mpc.contract.LoginContract
 
-class LoginPresenterImpl: BasePresenter<LoginContract.LoginView,LoginContract.LoginModel>(),LoginContract.LoginPresenter{
+class LoginPresenterImpl: BasePresenter<LoginContract.LoginView>(),LoginContract.LoginPresenter{
     //登录
     override fun login() {
         //view?.showLoading()
