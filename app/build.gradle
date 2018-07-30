@@ -57,4 +57,8 @@ dependencies {
     implementation rootProject.ext.bgaBanner
     //下拉刷新
     implementation rootProject.ext.smartrefresh
+    //持久化cookie
+    implementation rootProject.ext.cookie
+    //stetho chrome 调试
+    //implementation rootProject.ext.stetho
 }

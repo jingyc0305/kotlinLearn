@@ -1,12 +1,13 @@
 package chenrui.com.kotlindemo.kotlin.base
 
-import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import chenrui.com.kotlindemo.R
+
+
 
 /**
  * @Author:JIngYuchun
@@ -22,10 +23,11 @@ abstract class BaseFragment : Fragment(){
      * 是否加载过数据
      */
     private var isLoadedData:Boolean = false
-    var mDispatcher : VPDispatcher? = null
+    private var mDispatcher : VPDispatcher? = null
     var dataEmptyView : View? = null
     var netErrorView : View? = null
     var loadingView : View? = null
+    private var mRootView: View? = null//缓存fragment View
     // 由子类提供当前页面所有需要绑定的Presenter。
     open fun createPresenters():Array<out BasePresenter<*>>? = null
     override fun onCreateView(
@@ -33,26 +35,23 @@ abstract class BaseFragment : Fragment(){
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        //return super.onCreateView(inflater, container, savedInstanceState)
-        return inflater.inflate(initLayoutResId(),null)
+        if (mRootView == null) {
+            mRootView = inflater.inflate(initLayoutResId(),container,false)
+        }
+        //缓存的rootView需要判断是否已经被加过parent， 如果有parent则从parent删除，防止发生这个rootview已经有parent的错误。
+        if(mRootView?.parent !=null){
+            val mViewGroup = mRootView?.parent as ViewGroup
+            mViewGroup?.removeView(mRootView)
+        }
+        return mRootView
     }
-
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         isViewPrepare = true
-        initView()
-        //初始化状态视图
-        loadingView = layoutInflater?.inflate(R.layout.loading_view,null,false)
-        dataEmptyView = layoutInflater?.inflate(R.layout.empty_view,null,false)
-        netErrorView = layoutInflater?.inflate(R.layout.error_view,null,false)
+        initStatusView()
         //创建VP调度分发器 用于对单页面绑定多个presenter
-        mDispatcher = VPDispatcher()
-        //V-P生命周期绑定
-        mDispatcher?.dispatchOnCreate(savedInstanceState)
-        // 创建所有的presenter实例，并通过mDispatcher进行绑定
-        createPresenters()?.forEach {
-            mDispatcher?.addPresenter(it)
-        }
+        initPresenter(savedInstanceState)
+        initView()
         //加载数据
         layzLoadData()
     }
@@ -63,11 +62,6 @@ abstract class BaseFragment : Fragment(){
             layzLoadData()
         }
     }
-    override fun onAttach(context: Context?) {
-        super.onAttach(context)
-    }
-
-
     override fun onDestroy() {
         super.onDestroy()
         // 销毁时mDispatcher会自动进行所有的Presenter的解绑。
@@ -78,14 +72,28 @@ abstract class BaseFragment : Fragment(){
     /**
      * 懒加载
      */
-    fun layzLoadData(){
-
-        if(userVisibleHint && isViewPrepare && !isLoadedData){
+    private fun layzLoadData(){
+        if(userVisibleHint && isViewPrepare&&!isLoadedData){
             initData()
             isLoadedData = true
         }
     }
 
+    private fun initPresenter(savedInstanceState: Bundle?){
+        mDispatcher = VPDispatcher()
+        //V-P生命周期绑定
+        mDispatcher?.dispatchOnCreate(savedInstanceState)
+        // 创建所有的presenter实例，并通过mDispatcher进行绑定
+        createPresenters()?.forEach {
+            mDispatcher?.addPresenter(it)
+        }
+    }
+    private fun initStatusView(){
+        //初始化状态视图
+        loadingView = layoutInflater?.inflate(R.layout.loading_view,null,false)
+        dataEmptyView = layoutInflater?.inflate(R.layout.empty_view,null,false)
+        netErrorView = layoutInflater?.inflate(R.layout.error_view,null,false)
+    }
     /**
      * 初始化布局
      */

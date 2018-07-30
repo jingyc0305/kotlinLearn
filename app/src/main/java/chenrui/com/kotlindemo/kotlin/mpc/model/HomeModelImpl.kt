@@ -4,7 +4,7 @@ import chenrui.com.kotlindemo.kotlin.bean.HomeArticalBean
 import chenrui.com.kotlindemo.kotlin.bean.HomeBannerBean
 import chenrui.com.kotlindemo.kotlin.http.RetrofitManager
 import chenrui.com.kotlindemo.kotlin.mpc.contract.HomeContract
-import chenrui.com.kotlindemo.kotlin.rxhelp.RxSchedulersHelper
+import chenrui.com.kotlindemo.kotlin.rxhelper.RxSchedulersHelper
 import io.reactivex.Observable
 
 /**

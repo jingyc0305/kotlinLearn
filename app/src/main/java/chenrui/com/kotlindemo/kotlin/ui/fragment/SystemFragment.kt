@@ -1,6 +1,7 @@
 package chenrui.com.kotlindemo.kotlin.ui.fragment
 
 import android.os.Bundle
+import android.view.View
 import chenrui.com.kotlindemo.R
 import chenrui.com.kotlindemo.kotlin.base.BaseFragment
 

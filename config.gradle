@@ -17,12 +17,15 @@ ext{
             realtimeblurview        : "1.1.2",
             logger                  : "2.1.1",
             bgaBanner               : "2.2.4",
-            smartrefresh            : "1.0.5.1"
+            smartrefresh            : "1.0.5.1",
+            cookie                  : "v1.0.0",
+            stetho                  : "1.5.0",
+            stethohttp              : "1.5.0"
     ]
     //kotlin 支持库
     kotlin  = "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    //--------  support  -------
     support = [
-            //--------  support  -------
             supportv4               : "com.android.support:support-v4:$dependVersion.androidSupportSdkVersion",
             appcompatv7             : "com.android.support:appcompat-v7:$dependVersion.androidSupportSdkVersion",
             recyclerview            : "com.android.support:recyclerview-v7:$dependVersion.androidSupportSdkVersion",
@@ -30,14 +33,13 @@ ext{
             design                  : "com.android.support:design:$dependVersion.androidSupportSdkVersion",
             annotations             : "com.android.support:support-annotations:$dependVersion.androidSupportSdkVersion"
     ]
+    //------ retrofit和RxJava ---------
     retrofit = [
-            //------ retrofit和RxJava ---------
             retrofit                : "com.squareup.retrofit2:retrofit:$dependVersion.retrofitSdkVersion",
             retrofitConverterGson   : "com.squareup.retrofit2:converter-gson:$dependVersion.retrofitSdkVersion",
             retrofitAdapterRxjava2  : "com.squareup.retrofit2:adapter-rxjava2:$dependVersion.retrofitSdkVersion",
             okhttp3LoggerInterceptor: 'com.squareup.okhttp3:logging-interceptor:3.4.1'
     ]
-
     rxJava = [
             rxJava                : "io.reactivex.rxjava2:rxjava:$dependVersion.rxJava",
             rxAndroid             : "io.reactivex.rxjava2:rxandroid:$dependVersion.rxAndroid"
@@ -48,14 +50,22 @@ ext{
 //            glideCompiler        : "com.github.bumptech.glide:compiler:$dependVersion.glideSdkVersion",
 //            glideOkhttp          : "com.github.bumptech.glide:okhttp3-integration:$dependVersion.glideSdkVersion"
     ]
+    stetho = [
+            stetho               : "com.facebook.stetho:stetho:$dependVersion.stetho",
+            stethohttp           : "com.facebook.stetho:stetho-okhttp3:$dependVersion.stethohttp"
+    ]
     baseRecyclerViewAdapterHelper = "com.github.CymChad:BaseRecyclerViewAdapterHelper:$dependVersion.baseRvAdapter"
     realtimeblurview = "com.github.mmin18:realtimeblurview:$dependVersion.realtimeblurview"
     logger = "com.orhanobut:logger:$dependVersion.logger"
     bgaBanner = "cn.bingoogolapple:bga-banner:$dependVersion.bgaBanner"
     smartrefresh = "com.scwang.smartrefresh:SmartRefreshLayout:$dependVersion.smartrefresh"
+    cookie = "com.github.franmontiel:PersistentCookieJar:$dependVersion.cookie"
+
+
 
     support = support.values()
     retrofit = retrofit.values()
     rxJava = rxJava.values()
     glide = glide.values()
+    //stetho = stetho.Values()
 }

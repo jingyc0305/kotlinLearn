@@ -1,4 +1,4 @@
-package chenrui.com.kotlindemo.kotlin.rxhelp
+package chenrui.com.kotlindemo.kotlin.rxhelper
 
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers

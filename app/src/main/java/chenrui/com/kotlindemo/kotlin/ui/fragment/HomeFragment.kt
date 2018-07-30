@@ -6,10 +6,10 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import chenrui.com.kotlindemo.R
 import chenrui.com.kotlindemo.kotlin.adapter.HomeArticalsAdapter
 import chenrui.com.kotlindemo.kotlin.app.IntentKeyConstant
-import chenrui.com.kotlindemo.kotlin.app.MyApplication
 import chenrui.com.kotlindemo.kotlin.base.BaseFragment
 import chenrui.com.kotlindemo.kotlin.base.BasePresenter
 import chenrui.com.kotlindemo.kotlin.bean.HomeArticalBean
@@ -17,7 +17,6 @@ import chenrui.com.kotlindemo.kotlin.bean.HomeBannerBean
 import chenrui.com.kotlindemo.kotlin.mpc.contract.HomeContract
 import chenrui.com.kotlindemo.kotlin.mpc.presenter.HomePresenterImpl
 import chenrui.com.kotlindemo.kotlin.ui.activity.ArticalDetailActivity
-import chenrui.com.kotlindemo.kotlin.util.NetWorkUtil
 import cn.bingoogolapple.bgabanner.BGABanner
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -37,12 +36,13 @@ import kotlinx.android.synthetic.main.fragment_home.*
 class HomeFragment : BaseFragment(),HomeContract.HomeView{
     var mTitle : String? = null
     private var mPresenter : HomePresenterImpl = HomePresenterImpl()
-    var homeAdapter : HomeArticalsAdapter? = null
+    private var homeAdapter : HomeArticalsAdapter? = null
     var data: MutableList<HomeArticalBean.Data.Data>? = null
-    var curPage : Int = 0//默认读取第一页数据
-    var totalPages : Int = 0//总页数
-    var bannerView : View? = null
-    var mBGABanner : BGABanner? = null
+    private var curPage : Int = 0//默认读取第一页数据
+    private var totalPages : Int = 0//总页数
+    private var bannerView : View? = null
+    private  var mBGABanner : BGABanner? = null
+    private var errorInfoTv:TextView? = null
     companion object {
         fun getInstance(title : String?) : HomeFragment{
             val fragment = HomeFragment()
@@ -59,17 +59,17 @@ class HomeFragment : BaseFragment(),HomeContract.HomeView{
 
     override fun initView() {
         mPresenter.attachView(this)
-        bannerView = layoutInflater?.inflate(R.layout.home_banner,home_banner_rv.parent as ViewGroup,false)
+        bannerView = layoutInflater?.inflate(R.layout.home_banner, home_banner_rv.parent as ViewGroup,false)
         //初始化banner
         mBGABanner = bannerView?.findViewById(R.id.home_banner_content)
         //初始化adpater
         homeAdapter = HomeArticalsAdapter(R.layout.item_home_artical_list,data)
         //布局管理器
-        home_banner_rv.layoutManager = LinearLayoutManager(activity)
+        home_banner_rv?.layoutManager = LinearLayoutManager(context)
         //默认分割线 如果是卡片式 就不需要了
         //home_banner_rv.addItemDecoration(DividerItemDecoration(activity,DividerItemDecoration.VERTICAL))
         //设置适配器
-        home_banner_rv.adapter = homeAdapter
+        home_banner_rv?.adapter = homeAdapter
         //设置头布局
         homeAdapter?.addHeaderView(bannerView)
         //设置脚部布局
@@ -84,30 +84,28 @@ class HomeFragment : BaseFragment(),HomeContract.HomeView{
             startActivity(intent)
         }
         //设置 Header样式
-        refreshLayout.run {
-            setRefreshHeader(ClassicsHeader(activity))
-            //设置 Footer样式
-            setRefreshFooter(ClassicsFooter(activity!!).setSpinnerStyle(SpinnerStyle.Scale))
-            //设置 刷新监听
-            refreshLayout.setOnRefreshListener { refresh ->
-                mPresenter.getArticals(0)
-                refresh.setNoMoreData(false)
-                curPage = 0
-                refresh.finishRefresh(2000,true)//传入false表示刷新失败
+        refreshLayout?.setRefreshHeader(ClassicsHeader(activity))
+        //设置 Footer样式
+        refreshLayout?.setRefreshFooter(ClassicsFooter(activity!!).setSpinnerStyle(SpinnerStyle.Scale))
+        //设置 刷新监听
+        refreshLayout?.setOnRefreshListener { refresh ->
+            mPresenter.getArticals(0)
+            refresh.setNoMoreData(false)
+            curPage = 0
+            refresh.finishRefresh(2000,true)//传入false表示刷新失败
+        }
+        refreshLayout?.setOnLoadMoreListener { refresh ->
+            //refresh.finishLoadMore(2000/*,false*/)//传入false表示加载失败
+            curPage++
+            if(curPage <= totalPages-1){
+                mPresenter.getArticals(curPage)
+                refresh.finishLoadMore(1000,true,false)
+            }else if(curPage == totalPages-2){
+                mPresenter.getArticals(curPage)
+                //如果是最后一页了
+                refresh.finishLoadMoreWithNoMoreData()
             }
-            refreshLayout.setOnLoadMoreListener { refresh ->
-                //refresh.finishLoadMore(2000/*,false*/)//传入false表示加载失败
-                curPage++
-                if(curPage <= totalPages-1){
-                    mPresenter.getArticals(curPage)
-                    refresh.finishLoadMore(1000,true,false)
-                }else if(curPage == totalPages-2){
-                    mPresenter.getArticals(curPage)
-                    //如果是最后一页了
-                    refresh.finishLoadMoreWithNoMoreData()
-                }
 
-            }
         }
     }
 
@@ -120,7 +118,6 @@ class HomeFragment : BaseFragment(),HomeContract.HomeView{
     }
 
     override fun initData() {
-        if(!NetWorkUtil.isNetworkAvailable(MyApplication.context)) showErrorView("加载失败,点我重试")
         //获取banner
         mPresenter.getBanners()
         //获取文章 分页获取
@@ -174,8 +171,10 @@ class HomeFragment : BaseFragment(),HomeContract.HomeView{
     }
     override fun hideLoading() {
     }
-    override fun showErrorView(str:String) {
+    override fun showErrorView(str:String,errorcode:Int) {
         homeAdapter?.emptyView = netErrorView
+        errorInfoTv = netErrorView?.findViewById(R.id.error_info)
+        errorInfoTv?.text = """$str($errorcode)"""
     }
     override fun showEmptyView() {
         homeAdapter?.emptyView = dataEmptyView

@@ -2,17 +2,21 @@ package chenrui.com.kotlindemo.kotlin.http
 
 import chenrui.com.kotlindemo.kotlin.api.ApiService
 import chenrui.com.kotlindemo.kotlin.app.MyApplication
+import chenrui.com.kotlindemo.kotlin.app.MyApplication.Companion.context
 import chenrui.com.kotlindemo.kotlin.app.UrlContant
 import chenrui.com.kotlindemo.kotlin.util.NetWorkUtil
-import okhttp3.CacheControl
-import okhttp3.Interceptor
-import okhttp3.OkHttpClient
-import okhttp3.Request
+import com.franmontiel.persistentcookiejar.PersistentCookieJar
+import com.franmontiel.persistentcookiejar.cache.SetCookieCache
+import com.franmontiel.persistentcookiejar.persistence.SharedPrefsCookiePersistor
+import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.File
 import java.util.concurrent.TimeUnit
+
+
 
 /**
  * @Author:JIngYuchun
@@ -20,8 +24,8 @@ import java.util.concurrent.TimeUnit
  * @Description:网络请求管理类 Retrifit + okhttp
  */
 object RetrofitManager {
-    var retrofit:Retrofit? = null
-    var okhttpclient : OkHttpClient? = null
+    private var retrofit:Retrofit? = null
+    private var okhttpclient : OkHttpClient? = null
 
     val service : ApiService by lazy { getAppRetrofit()!!.create(ApiService::class.java) }
     private fun getAppRetrofit():Retrofit?{
@@ -31,19 +35,21 @@ object RetrofitManager {
                     //添加打印拦截
                     var httpLoggingInterceptor = HttpLoggingInterceptor()
                     httpLoggingInterceptor.level = HttpLoggingInterceptor.Level.BODY
+                    val cookie = PersistentCookieJar(SetCookieCache(), SharedPrefsCookiePersistor(context))
                     //设置缓存
                     //设置 请求的缓存的大小跟位置
-                    //val cacheFile = File(MyApplication.context.cacheDir, "cache")
-                    //val cache = Cache(cacheFile, 1024 * 1024 * 50) //50Mb 缓存的大小
+                    val cacheFile = File(context.cacheDir, "cache")
+                    val cache = Cache(cacheFile, 1024 * 1024 * 50) //50Mb 缓存的大小
                     okhttpclient = OkHttpClient.Builder()
-//                        .addInterceptor(addQueryParameterInterceptor())  //参数添加
-//                        .addInterceptor(addHeaderInterceptor()) // token过滤
-//                        .addInterceptor(addCacheInterceptor())
+//                        .addInterceptor(addQueryParameterInterceptor())  //添加请求公参
+//                        .addInterceptor(addHeaderInterceptor()) // 添加请求头
+                        .addInterceptor(addCacheInterceptor())
                         .addInterceptor(httpLoggingInterceptor)
-                        //.cache(cache)
+                        .cache(cache)
                         .connectTimeout(60L, TimeUnit.SECONDS)
                         .readTimeout(60L, TimeUnit.SECONDS)
                         .writeTimeout(60L, TimeUnit.SECONDS)
+                        .cookieJar(cookie)
                         .build()
 
                     retrofit = Retrofit
@@ -66,14 +72,37 @@ object RetrofitManager {
     private fun addQueryParameterInterceptor(): Interceptor {
         return Interceptor { chain ->
             val originalRequest = chain.request()
-            val request: Request
-            val modifiedUrl = originalRequest.url().newBuilder()
-                // Provide your custom parameter here
-                .addQueryParameter("phoneSystem", "")
-                .addQueryParameter("phoneModel", "")
-                .build()
-            request = originalRequest.newBuilder().url(modifiedUrl).build()
-            chain.proceed(request)
+            var modifiedUrl:HttpUrl? = null
+            var formBody:FormBody? = null
+            if(originalRequest.method() == "GET"){
+                    modifiedUrl = originalRequest.url().newBuilder()
+                    .addQueryParameter("phoneSystem", "")
+                    .addQueryParameter("phoneModel", "")
+                    .build()
+            }else if(originalRequest.method() == "POST"){
+                if (originalRequest.body() is FormBody) {
+                    val bodyBuilder = FormBody.Builder()
+                    formBody = originalRequest.body() as FormBody
+                    for (i in 0 until formBody.size()) {
+                        bodyBuilder.addEncoded(formBody.encodedName(i), formBody.encodedValue(i))
+                    }
+                    formBody = bodyBuilder
+                        .addEncoded("phoneSystem", "xxx")
+                        .addEncoded("phoneModel", "xxx")
+                        .build()
+                }
+            }
+            when (originalRequest.method()){
+                "GET" -> {
+                    chain.proceed(originalRequest.newBuilder().url(modifiedUrl).build())
+                }
+                "POST" -> {
+                    chain.proceed(originalRequest.newBuilder().post(formBody).build())
+                }
+                else -> {
+                    null
+                }
+            }
         }
     }
 
@@ -98,6 +127,7 @@ object RetrofitManager {
     private fun addCacheInterceptor(): Interceptor {
         return Interceptor { chain ->
             var request = chain.request()
+            //当前无网络时候 使用本地缓存
             if (!NetWorkUtil.isNetworkAvailable(MyApplication.context)) {
                 request = request.newBuilder()
                     .cacheControl(CacheControl.FORCE_CACHE)
@@ -105,7 +135,7 @@ object RetrofitManager {
             }
             val response = chain.proceed(request)
             if (NetWorkUtil.isNetworkAvailable(MyApplication.context)) {
-                val maxAge = 0
+                val maxAge = 8
                 // 有网络时 设置缓存超时时间0个小时 ,意思就是不读取缓存数据,只对get有用,post没有缓冲
                 response.newBuilder()
                     .header("Cache-Control", "public, max-age=" + maxAge)

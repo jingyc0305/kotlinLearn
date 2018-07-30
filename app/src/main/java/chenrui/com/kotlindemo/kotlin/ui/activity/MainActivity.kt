@@ -97,9 +97,11 @@ class MainActivity: BaseActivity(),HomeProjectContract.ProjectView{
             }
             2 -> mProjectFragment?.let {
                 mTransaction.show(it)
-            }?:ProjectFragment.getInstance(mTitles[2],mProjects!!).let {
-                mProjectFragment = it
-                mTransaction.add(R.id.fl_container,it,"project")
+            }?: mProjects?.let {
+                ProjectFragment.getInstance(mTitles[2], it).let {
+                    mProjectFragment = it
+                    mTransaction.add(R.id.fl_container,it,"project")
+                }
             }
             3 -> mSystemFragment?.let {
                 mTransaction.show(it)
@@ -159,7 +161,7 @@ class MainActivity: BaseActivity(),HomeProjectContract.ProjectView{
     override fun showEmptyView() {
     }
 
-    override fun showErrorView(msg: String) {
+    override fun showErrorView(msg: String,errorcode:Int) {
     }
 
     override fun onDestroy() {

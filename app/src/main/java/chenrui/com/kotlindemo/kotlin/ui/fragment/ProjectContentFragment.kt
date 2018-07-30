@@ -3,6 +3,7 @@ package chenrui.com.kotlindemo.kotlin.ui.fragment
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import android.widget.TextView
 import chenrui.com.kotlindemo.R
 import chenrui.com.kotlindemo.kotlin.adapter.ProjectsAdapter
 import chenrui.com.kotlindemo.kotlin.app.IntentKeyConstant
@@ -30,6 +31,7 @@ class ProjectContentFragment : BaseFragment(),HomeProjectContract.ProjectView{
     var data:MutableList<ProjectsBean.Data.Data>? = null
     var curPage : Int = 0//默认读取第一页数据
     var totalPages : Int = 0//总页数
+    private var errorInfoTv: TextView? = null
     companion object {
         fun getInstance(cid:Int):ProjectContentFragment{
             val fragment = ProjectContentFragment()
@@ -113,8 +115,10 @@ class ProjectContentFragment : BaseFragment(),HomeProjectContract.ProjectView{
     }
     override fun hideLoading() {
     }
-    override fun showErrorView(str:String) {
+    override fun showErrorView(str:String,errorCode: Int) {
         projectAdapter?.emptyView = netErrorView
+        errorInfoTv = netErrorView?.findViewById(R.id.error_info)
+        errorInfoTv?.text = """$str($errorCode)"""
     }
     override fun showEmptyView() {
         projectAdapter?.emptyView = dataEmptyView

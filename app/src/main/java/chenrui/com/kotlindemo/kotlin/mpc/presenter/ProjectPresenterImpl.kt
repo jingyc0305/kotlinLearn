@@ -2,6 +2,8 @@ package chenrui.com.kotlindemo.kotlin.mpc.presenter
 
 import android.os.Handler
 import chenrui.com.kotlindemo.kotlin.base.BasePresenter
+import chenrui.com.kotlindemo.kotlin.http.exception.ErrorCode
+import chenrui.com.kotlindemo.kotlin.http.exception.ExceptionHandle
 import chenrui.com.kotlindemo.kotlin.mpc.contract.HomeProjectContract
 import chenrui.com.kotlindemo.kotlin.mpc.model.ProjectModelImpl
 
@@ -28,7 +30,7 @@ class ProjectPresenterImpl :
 
         }, { error ->
             view?.apply {
-                error.printStackTrace()
+                showErrorView(ExceptionHandle.handleException(error),ErrorCode.UNKNOWN_ERROR)
             }
         })
     }
@@ -43,7 +45,7 @@ class ProjectPresenterImpl :
                 Handler().postDelayed({
                     view?.hideLoading()
                     when {
-                        projectlBean.errorCode<0 -> showErrorView(projectlBean.errorMsg)
+                        projectlBean.errorCode<0 -> showErrorView("状态码返回错误",ErrorCode.UNKNOWN_ERROR)
                         projectlBean.data.datas.size == 0 -> showEmptyView()
                         projectlBean.errorCode == 0 -> showProjectsList(projectlBean)
                     }
@@ -54,8 +56,7 @@ class ProjectPresenterImpl :
         }, { error ->
             view?.apply {
                 view?.hideLoading()
-                showErrorView("加载失败,点我重试")
-                error.printStackTrace()
+                showErrorView(ExceptionHandle.handleException(error),ErrorCode.UNKNOWN_ERROR)
             }
         })
     }

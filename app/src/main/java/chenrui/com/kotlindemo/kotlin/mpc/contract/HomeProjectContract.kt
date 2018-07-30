@@ -28,7 +28,7 @@ interface HomeProjectContract{
         //显示空
         fun showEmptyView()
         //显示加载失败
-        fun showErrorView(msg:String)
+        fun showErrorView(msg:String,errorcode:Int)
     }
     interface ProjectPresenter : IPresenter<ProjectView> {
         //获取banner

@@ -1,4 +1,4 @@
-package chenrui.com.kotlindemo.kotlin.rxhelp
+package chenrui.com.kotlindemo.kotlin.rxhelper
 
 import io.reactivex.*
 import org.reactivestreams.Publisher

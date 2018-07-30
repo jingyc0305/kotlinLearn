@@ -37,16 +37,18 @@ class ProjectFragment : BaseFragment(), HomeProjectContract.ProjectView {
     }
 
     override fun initView() {
-        //绑定view 和 modle
+        //绑定view
         mProjectPresenter.attachView(this)
-
-        for ((index, value) in mProjects!!.withIndex()) {
-            tabList.add(value.name)
-            fragmentlists?.add(ProjectContentFragment.getInstance(value.id))
+        mProjects?.let {
+            for ((index, value) in mProjects!!.withIndex()) {
+                tabList.add(value.name)
+                fragmentlists?.add(ProjectContentFragment.getInstance(value.id))
+            }
+            project_viewpager?.adapter =
+                    InnerPagerAdapter(childFragmentManager, fragmentlists,tabList.toTypedArray())
+            project_tab_layout?.setViewPager(project_viewpager)
+            project_viewpager?.offscreenPageLimit = 2
         }
-        project_viewpager.adapter =
-                InnerPagerAdapter(childFragmentManager, fragmentlists, tabList.toTypedArray())
-        project_tab_layout.setViewPager(project_viewpager)
     }
 
     override fun initData() {
@@ -54,6 +56,17 @@ class ProjectFragment : BaseFragment(), HomeProjectContract.ProjectView {
     }
 
     override fun showTrees(mProjects: MutableList<ProjectTreeBean.Data>) {
+        //如果预加载分类失败的话 可能由于网络问题 这里会在当前页面重新主动获取一次 然后刷新页面
+        error_layout.visibility = View.GONE
+        if(this.mProjects == null || this.mProjects!!.size == 0){
+            for ((index, value) in mProjects!!.withIndex()) {
+                tabList.add(value.name)
+                fragmentlists?.add(ProjectContentFragment.getInstance(value.id))
+            }
+            project_viewpager?.adapter =
+                    InnerPagerAdapter(childFragmentManager, fragmentlists,tabList.toTypedArray())
+            project_tab_layout?.setViewPager(project_viewpager)
+        }
     }
 
     internal inner class InnerPagerAdapter(
@@ -91,12 +104,15 @@ class ProjectFragment : BaseFragment(), HomeProjectContract.ProjectView {
         return arrayOf(mProjectPresenter)
     }
     override fun showProjectsList(mProjectsBean: ProjectsBean) {
+
     }
 
     override fun showEmptyView() {
+        error_layout.visibility = View.VISIBLE
     }
 
-    override fun showErrorView(msg: String) {
+    override fun showErrorView(msg: String,errorcode:Int) {
+        error_layout.visibility = View.VISIBLE
     }
 
     override fun showLoading() {
