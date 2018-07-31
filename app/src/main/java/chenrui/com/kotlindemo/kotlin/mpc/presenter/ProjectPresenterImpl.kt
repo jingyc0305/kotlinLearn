@@ -23,7 +23,7 @@ class ProjectPresenterImpl :
      */
     override fun getProjectTrees() {
         if (!isViewAttached()) return
-        projectModel?.getProjectTrees()?.subscribe({ treeBean ->
+        projectModel.getProjectTrees()?.subscribe({ treeBean ->
             view?.apply {
                 showTrees(treeBean.data)
             }
@@ -40,7 +40,7 @@ class ProjectPresenterImpl :
     override fun getProjectLists(page: Int,cid:Int) {
         if (!isViewAttached()) return
         view?.showLoading()
-        projectModel?.getProjectLists(page,cid)?.subscribe({ projectlBean ->
+        projectModel.getProjectLists(page,cid)?.subscribe({ projectlBean ->
             view?.apply {
                 Handler().postDelayed({
                     view?.hideLoading()

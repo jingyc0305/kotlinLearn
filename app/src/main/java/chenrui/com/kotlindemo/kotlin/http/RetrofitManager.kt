@@ -1,8 +1,8 @@
 package chenrui.com.kotlindemo.kotlin.http
 
 import chenrui.com.kotlindemo.kotlin.api.ApiService
-import chenrui.com.kotlindemo.kotlin.app.MyApplication
-import chenrui.com.kotlindemo.kotlin.app.MyApplication.Companion.context
+import chenrui.com.kotlindemo.kotlin.app.MainApplication
+import chenrui.com.kotlindemo.kotlin.app.MainApplication.Companion.context
 import chenrui.com.kotlindemo.kotlin.app.UrlContant
 import chenrui.com.kotlindemo.kotlin.util.NetWorkUtil
 import com.franmontiel.persistentcookiejar.PersistentCookieJar
@@ -94,10 +94,15 @@ object RetrofitManager {
             }
             when (originalRequest.method()){
                 "GET" -> {
-                    chain.proceed(originalRequest.newBuilder().url(modifiedUrl).build())
+                    modifiedUrl?.let {
+                        chain.proceed(originalRequest.newBuilder().url(modifiedUrl).build())
+                    }
+
                 }
                 "POST" -> {
-                    chain.proceed(originalRequest.newBuilder().post(formBody).build())
+                    formBody?.let {
+                        chain.proceed(originalRequest.newBuilder().post(formBody).build())
+                    }
                 }
                 else -> {
                     null
@@ -128,13 +133,13 @@ object RetrofitManager {
         return Interceptor { chain ->
             var request = chain.request()
             //当前无网络时候 使用本地缓存
-            if (!NetWorkUtil.isNetworkAvailable(MyApplication.context)) {
+            if (!NetWorkUtil.isNetworkAvailable(MainApplication.context)) {
                 request = request.newBuilder()
                     .cacheControl(CacheControl.FORCE_CACHE)
                     .build()
             }
             val response = chain.proceed(request)
-            if (NetWorkUtil.isNetworkAvailable(MyApplication.context)) {
+            if (NetWorkUtil.isNetworkAvailable(MainApplication.context)) {
                 val maxAge = 8
                 // 有网络时 设置缓存超时时间0个小时 ,意思就是不读取缓存数据,只对get有用,post没有缓冲
                 response.newBuilder()

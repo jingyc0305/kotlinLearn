@@ -1,7 +1,7 @@
 package chenrui.com.kotlindemo.kotlin.mpc.presenter
 
 import android.os.Handler
-import chenrui.com.kotlindemo.kotlin.app.MyApplication
+import chenrui.com.kotlindemo.kotlin.app.MainApplication
 import chenrui.com.kotlindemo.kotlin.base.BasePresenter
 import chenrui.com.kotlindemo.kotlin.http.exception.ErrorCode
 import chenrui.com.kotlindemo.kotlin.http.exception.ExceptionHandle
@@ -25,7 +25,7 @@ class HomePresenterImpl :
      */
     override fun getBanners() {
         if (!isViewAttached()) return
-        homeBannerModle?.getBanners()?.subscribe({ homeBannerBean ->
+        homeBannerModle.getBanners()?.subscribe({ homeBannerBean ->
             view?.apply {
                 showBanner(homeBannerBean.data)
             }
@@ -41,10 +41,10 @@ class HomePresenterImpl :
      */
     override fun getArticals(page: Int) {
         if (!isViewAttached()) return
-        if(!NetWorkUtil.isNetworkAvailable(MyApplication.context))
+        if(!NetWorkUtil.isNetworkAvailable(MainApplication.context))
             view?.showErrorView("网络出错,请检查您的网络.", ErrorCode.NO_NETWORK)
         view?.showLoading()
-        homeBannerModle?.getArticals(page)?.subscribe({ homeArticalBean ->
+        homeBannerModle.getArticals(page)?.subscribe({ homeArticalBean ->
             view?.apply {
                 Handler().postDelayed({
                     view?.hideLoading()

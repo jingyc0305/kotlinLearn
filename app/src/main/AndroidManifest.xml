@@ -14,7 +14,7 @@
     <uses-permission android:name="android.permission.READ_CONTACTS"/>
 
     <application
-        android:name=".kotlin.app.MyApplication"
+        android:name=".kotlin.app.MainApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"

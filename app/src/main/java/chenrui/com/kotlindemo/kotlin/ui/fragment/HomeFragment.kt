@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import chenrui.com.componentbase.ServiceFactory
 import chenrui.com.kotlindemo.R
 import chenrui.com.kotlindemo.kotlin.adapter.HomeArticalsAdapter
 import chenrui.com.kotlindemo.kotlin.app.IntentKeyConstant
@@ -18,6 +19,7 @@ import chenrui.com.kotlindemo.kotlin.mpc.contract.HomeContract
 import chenrui.com.kotlindemo.kotlin.mpc.presenter.HomePresenterImpl
 import chenrui.com.kotlindemo.kotlin.ui.activity.ArticalDetailActivity
 import cn.bingoogolapple.bgabanner.BGABanner
+import com.alibaba.android.arouter.launcher.ARouter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.bumptech.glide.request.RequestOptions
@@ -78,10 +80,14 @@ class HomeFragment : BaseFragment(),HomeContract.HomeView{
         dataEmptyView?.setOnClickListener { onFailedOrEmptyRetry() }
         //设置item点击事件 进入详情
         homeAdapter?.setOnItemClickListener { _, _, position ->
-            var intent = Intent(activity,ArticalDetailActivity::class.java)
-            intent.putExtra(IntentKeyConstant.artical_url_key, homeAdapter!!.data[position].link)
-            intent.putExtra(IntentKeyConstant.artical_title_key, homeAdapter!!.data[position].title)
-            startActivity(intent)
+            if(ServiceFactory.getInstance().accountService.isLogin){
+                var intent = Intent(activity,ArticalDetailActivity::class.java)
+                intent.putExtra(IntentKeyConstant.artical_url_key, homeAdapter!!.data[position].link)
+                intent.putExtra(IntentKeyConstant.artical_title_key, homeAdapter!!.data[position].title)
+                startActivity(intent)
+            }else{
+                ARouter.getInstance().build("/account/login").withString("test_key", "我是跳转登录携带的参数").navigation()
+            }
         }
         //设置 Header样式
         refreshLayout?.setRefreshHeader(ClassicsHeader(activity))

@@ -16,6 +16,11 @@ android {
         // 实现毛玻璃那种透明的效果需要添加的库
         renderscriptTargetApi 19
         renderscriptSupportModeEnabled true
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [ moduleName : project.getName() ]
+            }
+        }
     }
     buildTypes {
         release {
@@ -32,33 +37,14 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-
     //kotlin 支持库
     implementation rootProject.ext.kotlin
-    //support 库
-    implementation rootProject.ext.support
-    //retrofit
-    implementation rootProject.ext.retrofit
-    //rxjava
-    implementation rootProject.ext.rxJava
-    //glide
-    implementation rootProject.ext.glide
-    //logger
-    implementation rootProject.ext.logger
-    // 复杂类型适配器
-    implementation rootProject.ext.baseRecyclerViewAdapterHelper
-    // 底部菜单
-    implementation('com.flyco.tablayout:FlycoTabLayout_Lib:2.1.0@aar') {
-        exclude group: 'com.android.support', module: 'support-v4'
-    }
-    //模糊透明 View
-    implementation rootProject.ext.realtimeblurview
-    //banner
-    implementation rootProject.ext.bgaBanner
-    //下拉刷新
-    implementation rootProject.ext.smartrefresh
-    //持久化cookie
-    implementation rootProject.ext.cookie
-    //stetho chrome 调试
-    //implementation rootProject.ext.stetho
+    //依赖公共基础库(包含通信 接口+实现 方式) 后期尝试其他框架
+    implementation project (':baselib')
+    //阿里路由注解
+    annotationProcessor 'com.alibaba:arouter-compiler:1.1.4'
+    //依赖login组件 依赖项仅在运行时有效
+    runtimeOnly  project(':login')
+    //阿里路由注解
+    annotationProcessor 'com.alibaba:arouter-compiler:1.1.4'
 }

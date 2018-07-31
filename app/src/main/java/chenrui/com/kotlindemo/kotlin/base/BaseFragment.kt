@@ -41,7 +41,7 @@ abstract class BaseFragment : Fragment(){
         //缓存的rootView需要判断是否已经被加过parent， 如果有parent则从parent删除，防止发生这个rootview已经有parent的错误。
         if(mRootView?.parent !=null){
             val mViewGroup = mRootView?.parent as ViewGroup
-            mViewGroup?.removeView(mRootView)
+            mViewGroup.removeView(mRootView)
         }
         return mRootView
     }

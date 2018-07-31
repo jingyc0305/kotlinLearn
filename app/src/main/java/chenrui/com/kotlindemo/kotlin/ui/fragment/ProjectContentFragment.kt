@@ -100,7 +100,7 @@ class ProjectContentFragment : BaseFragment(),HomeProjectContract.ProjectView{
     }
 
     override fun initData() {
-        mPresenter?.getProjectLists(0,cid!!)
+        mPresenter.getProjectLists(0,cid!!)
     }
     override fun showTrees(mProjects: MutableList<ProjectTreeBean.Data>) {
     }
@@ -115,10 +115,10 @@ class ProjectContentFragment : BaseFragment(),HomeProjectContract.ProjectView{
     }
     override fun hideLoading() {
     }
-    override fun showErrorView(str:String,errorCode: Int) {
+    override fun showErrorView(str:String,errorcode: Int) {
         projectAdapter?.emptyView = netErrorView
         errorInfoTv = netErrorView?.findViewById(R.id.error_info)
-        errorInfoTv?.text = """$str($errorCode)"""
+        errorInfoTv?.text = """$str($errorcode)"""
     }
     override fun showEmptyView() {
         projectAdapter?.emptyView = dataEmptyView

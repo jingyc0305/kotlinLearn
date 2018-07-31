@@ -42,7 +42,7 @@ class ProjectFragment : BaseFragment(), HomeProjectContract.ProjectView {
         mProjects?.let {
             for ((index, value) in mProjects!!.withIndex()) {
                 tabList.add(value.name)
-                fragmentlists?.add(ProjectContentFragment.getInstance(value.id))
+                fragmentlists.add(ProjectContentFragment.getInstance(value.id))
             }
             project_viewpager?.adapter =
                     InnerPagerAdapter(childFragmentManager, fragmentlists,tabList.toTypedArray())
@@ -59,9 +59,9 @@ class ProjectFragment : BaseFragment(), HomeProjectContract.ProjectView {
         //如果预加载分类失败的话 可能由于网络问题 这里会在当前页面重新主动获取一次 然后刷新页面
         error_layout.visibility = View.GONE
         if(this.mProjects == null || this.mProjects!!.size == 0){
-            for ((index, value) in mProjects!!.withIndex()) {
+            for ((index, value) in mProjects.withIndex()) {
                 tabList.add(value.name)
-                fragmentlists?.add(ProjectContentFragment.getInstance(value.id))
+                fragmentlists.add(ProjectContentFragment.getInstance(value.id))
             }
             project_viewpager?.adapter =
                     InnerPagerAdapter(childFragmentManager, fragmentlists,tabList.toTypedArray())
