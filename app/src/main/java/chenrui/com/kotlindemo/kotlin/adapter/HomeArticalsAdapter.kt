@@ -10,10 +10,10 @@ import com.chad.library.adapter.base.BaseViewHolder
  * @Date:2018/7/23
  * @Description:首页文章列表适配器
  */
-class HomeArticalsAdapter(layoutResId: Int, data: MutableList<HomeArticalBean.Data.Data>?) :
-    BaseQuickAdapter<HomeArticalBean.Data.Data, BaseViewHolder>(layoutResId, data) {
+class HomeArticalsAdapter(layoutResId: Int, data: MutableList<HomeArticalBean.Data.DataBean>?) :
+    BaseQuickAdapter<HomeArticalBean.Data.DataBean, BaseViewHolder>(layoutResId, data) {
 
-    override fun convert(helper: BaseViewHolder, item: HomeArticalBean.Data.Data) {
+    override fun convert(helper: BaseViewHolder, item: HomeArticalBean.Data.DataBean) {
 
         helper.let {
             it.setText(R.id.home_artical_title,item.title)

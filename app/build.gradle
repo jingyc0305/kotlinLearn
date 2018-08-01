@@ -1,9 +1,7 @@
 apply plugin: 'com.android.application'
-
 apply plugin: 'kotlin-android'
-
 apply plugin: 'kotlin-android-extensions'
-
+apply plugin: 'kotlin-kapt'
 android {
     compileSdkVersion rootProject.ext.android.compileSdkVersion
     defaultConfig {
@@ -16,9 +14,9 @@ android {
         // 实现毛玻璃那种透明的效果需要添加的库
         renderscriptTargetApi 19
         renderscriptSupportModeEnabled true
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments = [ moduleName : project.getName() ]
+        kapt {
+            arguments {
+                arg("moduleName", project.getName())
             }
         }
     }
@@ -34,17 +32,12 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support.constraint:constraint-layout:1.1.2'
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    //kotlin 支持库
-    implementation rootProject.ext.kotlin
+
+
     //依赖公共基础库(包含通信 接口+实现 方式) 后期尝试其他框架
     implementation project (':baselib')
     //阿里路由注解
-    annotationProcessor 'com.alibaba:arouter-compiler:1.1.4'
+    kapt 'com.alibaba:arouter-compiler:1.1.4'
     //依赖login组件 依赖项仅在运行时有效
-    runtimeOnly  project(':login')
-    //阿里路由注解
-    annotationProcessor 'com.alibaba:arouter-compiler:1.1.4'
+    implementation project(':login')
 }

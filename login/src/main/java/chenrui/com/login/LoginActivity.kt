@@ -15,12 +15,12 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.support.design.widget.Snackbar
-import android.support.v7.app.AppCompatActivity
 import android.text.TextUtils
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import chenrui.com.kotlindemo.kotlin.base.BaseActivity
 import com.alibaba.android.arouter.facade.annotation.Route
 import kotlinx.android.synthetic.main.activity_login.*
 import java.util.*
@@ -29,7 +29,17 @@ import java.util.*
  * A login screen that offers login via email/password.
  */
 @Route(path = "/account/login")
-class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
+class LoginActivity : BaseActivity(), LoaderCallbacks<Cursor> {
+    override fun initLayoutResId(): Int {
+        return R.layout.activity_login
+    }
+
+    override fun initData() {
+    }
+
+    override fun initView() {
+    }
+
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
@@ -37,7 +47,6 @@ class LoginActivity : AppCompatActivity(), LoaderCallbacks<Cursor> {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
         // Set up the login form.
         populateAutoComplete()
         password.setOnEditorActionListener(TextView.OnEditorActionListener { _, id, _ ->

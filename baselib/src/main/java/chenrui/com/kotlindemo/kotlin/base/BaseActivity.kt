@@ -1,15 +1,15 @@
 package chenrui.com.kotlindemo.kotlin.base
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
 import android.widget.Toast
+import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
 
 /**
  * @Author:JIngYuchun
  * @Date:2018/7/20
  * @Description:父级基础视图View Activity [父亲一样,只管大事情,多事情,掌控全局 如:Fragment 等琐事]
  */
-abstract class BaseActivity:AppCompatActivity(),IView{
+abstract class BaseActivity:RxAppCompatActivity(),IView{
     var mDispatcher : VPDispatcher? = null
     // 由子类提供当前页面所有需要绑定的Presenter。
     open fun createPresenters():Array<out BasePresenter<*>>? = null

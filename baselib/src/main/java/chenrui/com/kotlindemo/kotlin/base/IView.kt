@@ -1,5 +1,8 @@
 package chenrui.com.kotlindemo.kotlin.base
 
+import com.trello.rxlifecycle2.LifecycleTransformer
+
+
 /**
  * @Author:JIngYuchun
  * @Date:2018/7/20
@@ -16,4 +19,8 @@ interface IView {
      */
     fun hideLoading()
 
+    /**
+     * 绑定生命周期
+     */
+    fun <T> bindToLifecycle(): LifecycleTransformer<T>
 }

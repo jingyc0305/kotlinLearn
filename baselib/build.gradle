@@ -1,5 +1,7 @@
 apply plugin: 'com.android.library'
-
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 android {
     compileSdkVersion 27
     defaultConfig {
@@ -8,9 +10,9 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        javaCompileOptions {
-            annotationProcessorOptions {
-                arguments = [ moduleName : project.getName() ]
+        kapt {
+            arguments {
+                arg("moduleName", project.getName())
             }
         }
     }
@@ -26,16 +28,15 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     //依赖组件通信服务基础库
-    api project (':componentbase')
+    api project(':componentbase')
     //ARouter 阿里路由框架
     api 'com.alibaba:arouter-api:1.3.1'
     //注解依赖需要所有使用 ARouter 的 module 都添加依赖
-    annotationProcessor 'com.alibaba:arouter-compiler:1.1.4'
+    kapt 'com.alibaba:arouter-compiler:1.1.4'
     //kotlin 支持库
     api rootProject.ext.kotlin
     //support 库
@@ -62,4 +63,7 @@ dependencies {
     api rootProject.ext.smartrefresh
     //持久化cookie
     api rootProject.ext.cookie
+    //生命周期管理 rxlifecycle
+    //api 'com.trello.rxlifecycle2:rxlifecycle-android-lifecycle-kotlin:2.2.2'
+    api 'com.trello.rxlifecycle2:rxlifecycle-components:2.2.2'
 }

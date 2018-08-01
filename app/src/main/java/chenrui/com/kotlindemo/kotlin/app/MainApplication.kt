@@ -55,17 +55,6 @@ class MainApplication: BaseApp() {
     override fun onCreate() {
         super.onCreate()
         context = applicationContext
-        // 初始化组件 Application
-        initModuleApp(this)
-        // 其他操作
-        // 所有 Application 初始化后的操作
-        initModuleData(this)
-        //logger日志
-        initConfig()
-        //计算设备大小
-        //DisplayManager.init(this)
-        //注册Activity生命周期监听
-        registerActivityLifecycleCallbacks(mActivityLifecycleCallbacks)
         // 初始化 ARouter
         if (chenrui.com.kotlindemo.BuildConfig.DEBUG) {
             // 这两行必须写在init之前，否则这些配置在init过程中将无效
@@ -76,6 +65,17 @@ class MainApplication: BaseApp() {
         }
         // 初始化 ARouter
         ARouter.init(this)
+        //logger日志
+        initConfig()
+        //计算设备大小
+        //DisplayManager.init(this)
+        //注册Activity生命周期监听
+        registerActivityLifecycleCallbacks(mActivityLifecycleCallbacks)
+        // 初始化组件 Application
+        initModuleApp(this)
+        // 其他操作
+        // 所有 Application 初始化后的操作
+        initModuleData(this)
     }
     /**
      * 初始化配置

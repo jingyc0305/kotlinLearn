@@ -40,7 +40,7 @@ class ProjectFragment : BaseFragment(), HomeProjectContract.ProjectView {
         //绑定view
         mProjectPresenter.attachView(this)
         mProjects?.let {
-            for ((index, value) in mProjects!!.withIndex()) {
+            for ((index, value) in it.withIndex()) {
                 tabList.add(value.name)
                 fragmentlists.add(ProjectContentFragment.getInstance(value.id))
             }

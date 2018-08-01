@@ -1,12 +1,20 @@
 package chenrui.com.kotlindemo.kotlin.base
 
 import android.os.Bundle
+import android.support.annotation.CallSuper
+import android.support.annotation.CheckResult
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import chenrui.com.kotlindemo.R
-
+import chenrui.com.baselib.R
+import com.trello.rxlifecycle2.LifecycleProvider
+import com.trello.rxlifecycle2.LifecycleTransformer
+import com.trello.rxlifecycle2.RxLifecycle
+import com.trello.rxlifecycle2.android.FragmentEvent
+import com.trello.rxlifecycle2.android.RxLifecycleAndroid
+import io.reactivex.Observable
+import io.reactivex.subjects.BehaviorSubject
 
 
 /**
@@ -14,7 +22,7 @@ import chenrui.com.kotlindemo.R
  * @Date:2018/7/20
  * @Description:父级基础视图View Fragment [母亲一样,只管小事情 如:数据加载 视图显示 布局碎片拼接 等家庭琐事]
  */
-abstract class BaseFragment : Fragment(){
+abstract class BaseFragment : Fragment(),LifecycleProvider<FragmentEvent>{
     /**
      * 视图是否初始化完成
      */
@@ -62,13 +70,6 @@ abstract class BaseFragment : Fragment(){
             layzLoadData()
         }
     }
-    override fun onDestroy() {
-        super.onDestroy()
-        // 销毁时mDispatcher会自动进行所有的Presenter的解绑。
-        // 所以具体的V层并不需要再自己去手动进行解绑操作了
-        mDispatcher?.dipatchOnDestroy()
-    }
-
     /**
      * 懒加载
      */
@@ -110,4 +111,85 @@ abstract class BaseFragment : Fragment(){
      * 初始化Presenter
      */
     //abstract fun initPresenter()
+
+
+    private val lifecycleSubject = BehaviorSubject.create<FragmentEvent>()
+
+    @CheckResult
+    override fun lifecycle(): Observable<FragmentEvent> {
+        return lifecycleSubject.hide()
+    }
+
+    @CheckResult
+    override fun <T> bindUntilEvent(event: FragmentEvent): LifecycleTransformer<T> {
+        return RxLifecycle.bindUntilEvent(lifecycleSubject, event)
+    }
+
+    @CheckResult
+    override fun <T> bindToLifecycle(): LifecycleTransformer<T> {
+        return RxLifecycleAndroid.bindFragment(lifecycleSubject)
+    }
+
+    @CallSuper
+    override fun onAttach(activity: android.app.Activity) {
+        super.onAttach(activity)
+        lifecycleSubject.onNext(FragmentEvent.ATTACH)
+    }
+
+    @CallSuper
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        lifecycleSubject.onNext(FragmentEvent.CREATE)
+    }
+
+    @CallSuper
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        lifecycleSubject.onNext(FragmentEvent.CREATE_VIEW)
+    }
+
+    @CallSuper
+    override fun onStart() {
+        super.onStart()
+        lifecycleSubject.onNext(FragmentEvent.START)
+    }
+
+    @CallSuper
+    override fun onResume() {
+        super.onResume()
+        lifecycleSubject.onNext(FragmentEvent.RESUME)
+    }
+
+    @CallSuper
+    override fun onPause() {
+        lifecycleSubject.onNext(FragmentEvent.PAUSE)
+        super.onPause()
+    }
+
+    @CallSuper
+    override fun onStop() {
+        lifecycleSubject.onNext(FragmentEvent.STOP)
+        super.onStop()
+    }
+
+    @CallSuper
+    override fun onDestroyView() {
+        lifecycleSubject.onNext(FragmentEvent.DESTROY_VIEW)
+        super.onDestroyView()
+    }
+
+    @CallSuper
+    override fun onDestroy() {
+        lifecycleSubject.onNext(FragmentEvent.DESTROY)
+        super.onDestroy()
+        // 销毁时mDispatcher会自动进行所有的Presenter的解绑。
+        // 所以具体的V层并不需要再自己去手动进行解绑操作了
+        mDispatcher?.dipatchOnDestroy()
+    }
+
+    @CallSuper
+    override fun onDetach() {
+        lifecycleSubject.onNext(FragmentEvent.DETACH)
+        super.onDetach()
+    }
 }

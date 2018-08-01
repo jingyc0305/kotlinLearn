@@ -20,12 +20,13 @@ class HomePresenterImpl :
     private val homeBannerModle: HomeModelImpl by lazy {
         HomeModelImpl()
     }
+
     /**
      * 获取banners
      */
     override fun getBanners() {
         if (!isViewAttached()) return
-        homeBannerModle.getBanners()?.subscribe({ homeBannerBean ->
+        homeBannerModle.getBanners()?.compose(view?.bindToLifecycle()).subscribe({ homeBannerBean ->
             view?.apply {
                 showBanner(homeBannerBean.data)
             }
@@ -36,12 +37,13 @@ class HomePresenterImpl :
             }
         })
     }
+
     /**
      * 获取articals
      */
     override fun getArticals(page: Int) {
         if (!isViewAttached()) return
-        if(!NetWorkUtil.isNetworkAvailable(MainApplication.context))
+        if (!NetWorkUtil.isNetworkAvailable(MainApplication.context))
             view?.showErrorView("网络出错,请检查您的网络.", ErrorCode.NO_NETWORK)
         view?.showLoading()
         homeBannerModle.getArticals(page)?.subscribe({ homeArticalBean ->
@@ -49,18 +51,21 @@ class HomePresenterImpl :
                 Handler().postDelayed({
                     view?.hideLoading()
                     when {
-                        homeArticalBean.errorCode<0 -> showErrorView("状态码返回错误",ErrorCode.UNKNOWN_ERROR)
+                        homeArticalBean.errorCode < 0 -> showErrorView(
+                            "状态码返回错误",
+                            ErrorCode.UNKNOWN_ERROR
+                        )
                         homeArticalBean.data.datas.size == 0 -> showEmptyView()
                         homeArticalBean.errorCode == 0 -> showArticalList(homeArticalBean)
                     }
-                },1000)
+                }, 1000)
 
             }
 
         }, { error ->
             view?.apply {
                 view?.hideLoading()
-                showErrorView(ExceptionHandle.handleException(error),ErrorCode.UNKNOWN_ERROR)
+                showErrorView(ExceptionHandle.handleException(error), ErrorCode.UNKNOWN_ERROR)
             }
         })
     }

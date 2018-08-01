@@ -11,6 +11,7 @@ import chenrui.com.kotlindemo.kotlin.bean.TabEntites
 import chenrui.com.kotlindemo.kotlin.mpc.contract.HomeProjectContract
 import chenrui.com.kotlindemo.kotlin.mpc.presenter.ProjectPresenterImpl
 import chenrui.com.kotlindemo.kotlin.ui.fragment.*
+import com.alibaba.android.arouter.facade.annotation.Route
 import com.flyco.tablayout.listener.CustomTabEntity
 import com.flyco.tablayout.listener.OnTabSelectListener
 import kotlinx.android.synthetic.main.activity_main.*
@@ -18,6 +19,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 /**
  * 主界面
  */
+@Route(path = "/home/mian")
 class MainActivity: BaseActivity(),HomeProjectContract.ProjectView{
     private val mTitles = arrayOf("首页","导航","项目","体系","我")
     private val mTabs = ArrayList<CustomTabEntity>()

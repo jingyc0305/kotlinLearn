@@ -28,7 +28,7 @@ class ProjectContentFragment : BaseFragment(),HomeProjectContract.ProjectView{
     private var cid : Int? = null
     private var mPresenter : ProjectPresenterImpl = ProjectPresenterImpl()
     private var projectAdapter:ProjectsAdapter? = null
-    var data:MutableList<ProjectsBean.Data.Data>? = null
+    var data:MutableList<ProjectsBean.Data.DataBean>? = null
     var curPage : Int = 0//默认读取第一页数据
     var totalPages : Int = 0//总页数
     private var errorInfoTv: TextView? = null

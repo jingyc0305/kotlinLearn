@@ -5,6 +5,7 @@ if(isRunAlone.toBoolean()){
 }
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'kotlin-kapt'
 android {
     compileSdkVersion 27
     defaultConfig {
@@ -16,7 +17,11 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
+        kapt {
+            arguments {
+                arg("moduleName", project.getName())
+            }
+        }
     }
     resourcePrefix "login_"
     sourceSets {
@@ -40,12 +45,9 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    testImplementation 'junit:junit:4.12'
-    androidTestImplementation 'com.android.support.test:runner:1.0.2'
-    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
     //依赖通信基础库(接口+实现) 后期考虑其他框架
     api project (':baselib')
     //阿里路由注解
-    annotationProcessor 'com.alibaba:arouter-compiler:1.1.4'
+    kapt 'com.alibaba:arouter-compiler:1.1.4'
 }

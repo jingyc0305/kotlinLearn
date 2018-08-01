@@ -1,7 +1,9 @@
 package chenrui.com.kotlindemo.kotlin.ui.fragment
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.support.annotation.RequiresApi
 import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import android.view.ViewGroup
@@ -39,7 +41,7 @@ class HomeFragment : BaseFragment(),HomeContract.HomeView{
     var mTitle : String? = null
     private var mPresenter : HomePresenterImpl = HomePresenterImpl()
     private var homeAdapter : HomeArticalsAdapter? = null
-    var data: MutableList<HomeArticalBean.Data.Data>? = null
+    var data: MutableList<HomeArticalBean.Data.DataBean>? = null
     private var curPage : Int = 0//默认读取第一页数据
     private var totalPages : Int = 0//总页数
     private var bannerView : View? = null
@@ -59,6 +61,7 @@ class HomeFragment : BaseFragment(),HomeContract.HomeView{
         return R.layout.fragment_home
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun initView() {
         mPresenter.attachView(this)
         bannerView = layoutInflater?.inflate(R.layout.home_banner, home_banner_rv.parent as ViewGroup,false)

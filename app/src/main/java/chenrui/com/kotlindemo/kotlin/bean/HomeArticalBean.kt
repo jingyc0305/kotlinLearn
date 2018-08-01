@@ -13,7 +13,7 @@ data class HomeArticalBean(
 
     data class Data(
         val curPage: Int,
-        val datas: MutableList<Data>,
+        val datas: MutableList<DataBean>,
         val offset: Int,
         val over: Boolean,
         val pageCount: Int,
@@ -21,7 +21,7 @@ data class HomeArticalBean(
         val total: Int
     ) {
 
-        data class Data(
+        data class DataBean(
             val apkLink: String,
             val author: String,
             val chapterId: Int,

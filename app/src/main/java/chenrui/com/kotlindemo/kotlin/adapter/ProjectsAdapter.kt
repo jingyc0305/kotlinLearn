@@ -12,10 +12,10 @@ import com.chad.library.adapter.base.BaseViewHolder
  * @Date:2018/7/23
  * @Description:项目列表适配器
  */
-class ProjectsAdapter(layoutResId: Int, data: MutableList<ProjectsBean.Data.Data>?) :
-    BaseQuickAdapter<ProjectsBean.Data.Data, BaseViewHolder>(layoutResId, data) {
+class ProjectsAdapter(layoutResId: Int, data: MutableList<ProjectsBean.Data.DataBean>?) :
+    BaseQuickAdapter<ProjectsBean.Data.DataBean, BaseViewHolder>(layoutResId, data) {
 
-    override fun convert(helper: BaseViewHolder, item: ProjectsBean.Data.Data) {
+    override fun convert(helper: BaseViewHolder, item: ProjectsBean.Data.DataBean) {
 
         helper.let {
             it.setText(R.id.home_project_title,item.title)
