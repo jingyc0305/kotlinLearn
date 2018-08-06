@@ -23,7 +23,7 @@ class ProjectPresenterImpl :
      */
     override fun getProjectTrees() {
         if (!isViewAttached()) return
-        projectModel.getProjectTrees()?.compose(view?.bindToLifecycle()).subscribe({ treeBean ->
+        projectModel.getProjectTrees()?.compose(this.getActivity()?.bindToLifecycle()).subscribe({ treeBean ->
             view?.apply {
                 showTrees(treeBean.data)
             }

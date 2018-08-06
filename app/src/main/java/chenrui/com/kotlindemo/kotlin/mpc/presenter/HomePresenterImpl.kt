@@ -26,7 +26,7 @@ class HomePresenterImpl :
      */
     override fun getBanners() {
         if (!isViewAttached()) return
-        homeBannerModle.getBanners()?.compose(view?.bindToLifecycle()).subscribe({ homeBannerBean ->
+        homeBannerModle.getBanners()?.compose(getFragment().bindToLifecycle()).subscribe({ homeBannerBean ->
             view?.apply {
                 showBanner(homeBannerBean.data)
             }

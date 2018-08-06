@@ -30,6 +30,12 @@ import java.util.*
  */
 @Route(path = "/account/login")
 class LoginActivity : BaseActivity(), LoaderCallbacks<Cursor> {
+    override fun showLoading() {
+    }
+
+    override fun hideLoading() {
+    }
+
     override fun initLayoutResId(): Int {
         return R.layout.activity_login
     }

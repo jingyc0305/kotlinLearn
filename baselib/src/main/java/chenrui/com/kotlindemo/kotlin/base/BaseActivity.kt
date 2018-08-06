@@ -1,7 +1,6 @@
 package chenrui.com.kotlindemo.kotlin.base
 
 import android.os.Bundle
-import android.widget.Toast
 import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
 
 /**
@@ -10,7 +9,7 @@ import com.trello.rxlifecycle2.components.support.RxAppCompatActivity
  * @Description:父级基础视图View Activity [父亲一样,只管大事情,多事情,掌控全局 如:Fragment 等琐事]
  */
 abstract class BaseActivity:RxAppCompatActivity(),IView{
-    var mDispatcher : VPDispatcher? = null
+    private var mDispatcher : VPDispatcher? = null
     // 由子类提供当前页面所有需要绑定的Presenter。
     open fun createPresenters():Array<out BasePresenter<*>>? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,17 +23,13 @@ abstract class BaseActivity:RxAppCompatActivity(),IView{
         //初始化控件
         initView()
         // 创建所有的presenter实例，并通过mDispatcher进行绑定
-        createPresenters()?.forEach { mDispatcher?.addPresenter(it) }
+        createPresenters()?.forEach {
+            mDispatcher?.addPresenter(it)
+        }
         //初始化一些数据
         initData()
     }
-    override fun showLoading() {
-        Toast.makeText(this,"正在加载...",Toast.LENGTH_SHORT).show()
-    }
 
-    override fun hideLoading() {
-        Toast.makeText(this,"加载成功",Toast.LENGTH_SHORT).show()
-    }
     /**
      * 初始化布局资源
      */
@@ -48,16 +43,48 @@ abstract class BaseActivity:RxAppCompatActivity(),IView{
      */
     abstract fun initView()
 
-    /**
-     * 初始化presenter
-     */
-    //abstract fun initPresenter()
+    override fun showLoading() {
+    }
+
+    override fun hideLoading() {
+    }
+    override fun onStart() {
+        super.onStart()
+        mDispatcher?.dispatchOnStart()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mDispatcher?.dispatchOnResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mDispatcher?.dispatchOnPause()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        mDispatcher?.dispatchOnStop()
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        mDispatcher?.dispatchOnRestart()
+    }
 
     override fun onDestroy() {
         super.onDestroy()
         // 销毁时mDispatcher会自动进行所有的Presenter的解绑。
         // 所以具体的V层并不需要再自己去手动进行解绑操作了
         mDispatcher?.dipatchOnDestroy()
+    }
+    override fun getHostActivity(): BaseActivity {
+        return this
+    }
+
+    override fun getHostFragment(): BaseFragment {
+        return  fragmentManager.findFragmentByTag("home") as BaseFragment
     }
 
 }

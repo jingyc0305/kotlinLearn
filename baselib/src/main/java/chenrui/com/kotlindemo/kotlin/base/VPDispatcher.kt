@@ -22,7 +22,50 @@ class VPDispatcher {
 
     // ==== 绑定生命周期 ==========
     fun dispatchOnCreate(bundle: Bundle?) {
+        presenters.forEach {
+            if (it.isViewAttached()) {
+                it.onCreate(bundle)
+            }
+        }
+    }
+    fun dispatchOnStart() {
+        presenters.forEach {
+            if (it.isViewAttached()) {
+                it.onStart()
+            }
+        }
+    }
 
+    fun dispatchOnResume() {
+        presenters.forEach {
+            if (it.isViewAttached()) {
+                it.onResume()
+            }
+        }
+    }
+
+    fun dispatchOnPause() {
+        presenters.forEach {
+            if (it.isViewAttached()) {
+                it.onPause()
+            }
+        }
+    }
+
+    fun dispatchOnStop() {
+        presenters.forEach {
+            if (it.isViewAttached()) {
+                it.onStop()
+            }
+        }
+    }
+
+    fun dispatchOnRestart() {
+        presenters.forEach {
+            if (it.isViewAttached()) {
+                it.onRestart()
+            }
+        }
     }
     fun dipatchOnDestroy(){
         presenters.forEach {

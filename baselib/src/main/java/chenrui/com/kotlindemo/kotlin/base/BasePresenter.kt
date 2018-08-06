@@ -1,5 +1,6 @@
 package chenrui.com.kotlindemo.kotlin.base
 
+import android.content.Intent
 import android.os.Bundle
 
 /**
@@ -13,12 +14,16 @@ open class BasePresenter<V : IView> : IPresenter<V> {
         this.view = view
     }
 
+    override fun getActivity(): BaseActivity {
+        return view?.getHostActivity()?:throw RuntimeException("Could not call getActivity if the View is not attached")
+    }
+
+    override fun getFragment(): BaseFragment {
+        return view?.getHostFragment()?:throw RuntimeException("Could not call getFragment if the View is not attached")
+    }
     override fun detachView() {
         this.view = null
     }
-//    override fun getActivity():Activity{
-//        return view?.getHostActivity()?:throw RuntimeException("Could not call getActivity if the View is not attached")
-//    }
 
     /**
      * 如果是使用异步回调的方式去从model层获取的数据。
@@ -40,6 +45,13 @@ open class BasePresenter<V : IView> : IPresenter<V> {
      * 生命周期方法
      */
     open fun onCreate(bundle: Bundle?) {}
-    //...
+    open fun onStart(){}
+    open fun onRestart(){}
+    open fun onResume(){}
+    open fun onPause(){}
+    open fun onStop(){}
+    open fun onActivityResult(requestCode:Int, resultCode:Int, data: Intent?){}
     open fun onDestroy(){}
+    open fun onSaveInstanceState(outState: Bundle?){}
+    open fun onRestoreInstanceState(savedInstanceState: Bundle?){}
 }

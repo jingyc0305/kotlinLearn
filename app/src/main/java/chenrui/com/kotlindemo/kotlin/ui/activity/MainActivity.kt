@@ -60,6 +60,12 @@ class MainActivity: BaseActivity(),HomeProjectContract.ProjectView{
     override fun onCreate(savedInstanceState: Bundle?) {
         if (savedInstanceState != null) {
             mSelectIndex = savedInstanceState.getInt("currTabIndex")
+            //防止fragment重新添加
+            mHomeFragment = supportFragmentManager.findFragmentByTag("home") as HomeFragment
+            mNaviFragment = supportFragmentManager.findFragmentByTag("nav") as NaviFragment
+            mProjectFragment = supportFragmentManager.findFragmentByTag("project") as ProjectFragment
+            mSystemFragment = supportFragmentManager.findFragmentByTag("system") as SystemFragment
+            mPersionalFragment = supportFragmentManager.findFragmentByTag("personal") as PersionalFragment
         }
         super.onCreate(savedInstanceState)
         initTab()
@@ -115,7 +121,7 @@ class MainActivity: BaseActivity(),HomeProjectContract.ProjectView{
                 mTransaction.show(it)
             }?:PersionalFragment.getInstance(mTitles[4]).let {
                 mPersionalFragment = it
-                mTransaction.add(R.id.fl_container,it,"persional")
+                mTransaction.add(R.id.fl_container,it,"personal")
             }
             else ->{
 
@@ -165,10 +171,8 @@ class MainActivity: BaseActivity(),HomeProjectContract.ProjectView{
 
     override fun showErrorView(msg: String,errorcode:Int) {
     }
-
     override fun onDestroy() {
         super.onDestroy()
         mProjectPresenter.detachView()
     }
-
 }

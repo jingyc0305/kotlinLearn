@@ -16,11 +16,13 @@ import chenrui.com.kotlindemo.kotlin.mpc.presenter.ProjectPresenterImpl
 import kotlinx.android.synthetic.main.fragment_project.*
 
 class ProjectFragment : BaseFragment(), HomeProjectContract.ProjectView {
+
     private var mTitle: String? = null
     private var tabList = ArrayList<String>()
     private val fragmentlists = ArrayList<Fragment>()
     private var mProjectPresenter: ProjectPresenterImpl = ProjectPresenterImpl()
     private var mProjects: MutableList<ProjectTreeBean.Data>? = null
+    private var mPCFragment:ProjectContentFragment?=null
     companion object {
         fun getInstance(title: String,mProjects:MutableList<ProjectTreeBean.Data>): ProjectFragment {
             val fragment = ProjectFragment()
@@ -47,7 +49,7 @@ class ProjectFragment : BaseFragment(), HomeProjectContract.ProjectView {
             project_viewpager?.adapter =
                     InnerPagerAdapter(childFragmentManager, fragmentlists,tabList.toTypedArray())
             project_tab_layout?.setViewPager(project_viewpager)
-            project_viewpager?.offscreenPageLimit = 2
+            project_viewpager?.offscreenPageLimit = tabList.size
         }
     }
 
@@ -61,7 +63,8 @@ class ProjectFragment : BaseFragment(), HomeProjectContract.ProjectView {
         if(this.mProjects == null || this.mProjects!!.size == 0){
             for ((index, value) in mProjects.withIndex()) {
                 tabList.add(value.name)
-                fragmentlists.add(ProjectContentFragment.getInstance(value.id))
+                mPCFragment = ProjectContentFragment.getInstance(value.id)
+                fragmentlists.add(mPCFragment!!)
             }
             project_viewpager?.adapter =
                     InnerPagerAdapter(childFragmentManager, fragmentlists,tabList.toTypedArray())

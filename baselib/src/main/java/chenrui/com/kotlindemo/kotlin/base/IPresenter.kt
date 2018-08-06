@@ -16,4 +16,12 @@ interface IPresenter<in V : IView> {
      */
     fun detachView()
 
+    /**
+     * 获取activity
+     */
+    fun getActivity(): BaseActivity
+    /**
+     * 获取fragment
+     */
+    fun getFragment(): BaseFragment
 }

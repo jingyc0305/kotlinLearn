@@ -22,7 +22,7 @@ import io.reactivex.subjects.BehaviorSubject
  * @Date:2018/7/20
  * @Description:父级基础视图View Fragment [母亲一样,只管小事情 如:数据加载 视图显示 布局碎片拼接 等家庭琐事]
  */
-abstract class BaseFragment : Fragment(),LifecycleProvider<FragmentEvent>{
+abstract class BaseFragment : Fragment(),LifecycleProvider<FragmentEvent>,IView{
     /**
      * 视图是否初始化完成
      */
@@ -95,6 +95,18 @@ abstract class BaseFragment : Fragment(),LifecycleProvider<FragmentEvent>{
         dataEmptyView = layoutInflater?.inflate(R.layout.empty_view,null,false)
         netErrorView = layoutInflater?.inflate(R.layout.error_view,null,false)
     }
+    override fun getHostActivity(): BaseActivity {
+        return activity as BaseActivity
+    }
+
+    override fun getHostFragment(): BaseFragment {
+        return this
+    }
+    override fun showLoading() {
+    }
+
+    override fun hideLoading() {
+    }
     /**
      * 初始化布局
      */
@@ -111,7 +123,6 @@ abstract class BaseFragment : Fragment(),LifecycleProvider<FragmentEvent>{
      * 初始化Presenter
      */
     //abstract fun initPresenter()
-
 
     private val lifecycleSubject = BehaviorSubject.create<FragmentEvent>()
 
