@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
                                     xmlns:app="http://schemas.android.com/apk/res-auto"
+                                    xmlns:tools="http://schemas.android.com/tools"
                                     android:id="@+id/linearLayout"
                                     app:cardCornerRadius="5dp"
                                     android:layout_margin="8dp"
@@ -19,7 +20,7 @@
             android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="我们的SurfaceView里面有一个Rect二维数组, 用来存放这些矩形, 小猪离开手指之后, 就开始从小猪当前所在的矩形,用广度优先遍历, 找到一条最短的路径, 然后再根据这条路径在Rect数组中找到对应的矩形, 最后根据这些对应的矩形的坐标来确定出Path."
+            android:text="最后根据这些对应的矩形的坐标来确定出Path."
             android:textAlignment="viewStart"
             android:textColor="@android:color/black"
             android:textSize="18sp"
@@ -76,15 +77,19 @@
         <TextView
             android:id="@+id/home_project_descripe"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
+            android:layout_height="77dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="discripe"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:text="我们的SurfaceView里面有一个Rect二维数组, 用来存放这些矩形, 小猪离开手指之后, 就开始从小猪当前所在的矩形,用广度优先遍历, 找到一条最短的路径, 然后再根据这条路径在Rect数组中找到对应的矩形, "
+            android:textSize="14sp"
+            app:layout_constraintBottom_toTopOf="@+id/home_project_author"
+            app:layout_constraintEnd_toEndOf="@+id/home_project_title"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/home_project_img"
-            app:layout_constraintTop_toBottomOf="@+id/home_project_title"/>
+            app:layout_constraintTop_toBottomOf="@+id/home_project_title"
+            app:layout_constraintVertical_bias="1.0"/>
     </android.support.constraint.ConstraintLayout>
 
 </android.support.v7.widget.CardView>

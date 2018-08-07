@@ -20,6 +20,7 @@ class NaviFragment : BaseFragment(){
     }
 
     override fun initView() {
+
     }
 
     override fun initData() {

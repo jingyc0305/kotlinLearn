@@ -79,8 +79,8 @@ class HomeFragment : BaseFragment(),HomeContract.HomeView{
         homeAdapter?.addHeaderView(bannerView)
         //设置脚部布局
         //重试加载数据点击事件 同刷新
-        netErrorView?.setOnClickListener { onFailedOrEmptyRetry() }
-        dataEmptyView?.setOnClickListener { onFailedOrEmptyRetry() }
+        netErrorView?.setOnClickListener { initData() }
+        dataEmptyView?.setOnClickListener { initData() }
         //设置item点击事件 进入详情
         homeAdapter?.setOnItemClickListener { _, _, position ->
             if(ServiceFactory.getInstance().accountService.isLogin){
@@ -106,10 +106,10 @@ class HomeFragment : BaseFragment(),HomeContract.HomeView{
         refreshLayout?.setOnLoadMoreListener { refresh ->
             //refresh.finishLoadMore(2000/*,false*/)//传入false表示加载失败
             curPage++
-            if(curPage <= totalPages-1){
+            if(curPage < totalPages){
                 mPresenter.getArticals(curPage)
                 refresh.finishLoadMore(1000,true,false)
-            }else if(curPage == totalPages-2){
+            }else{
                 mPresenter.getArticals(curPage)
                 //如果是最后一页了
                 refresh.finishLoadMoreWithNoMoreData()
@@ -117,15 +117,6 @@ class HomeFragment : BaseFragment(),HomeContract.HomeView{
 
         }
     }
-
-    /**
-     * 重新获取数据 同刷新
-     */
-    private fun onFailedOrEmptyRetry() {
-        //if(data!=null) data.removeAll(data)
-        initData()
-    }
-
     override fun initData() {
         //获取banner
         mPresenter.getBanners()
@@ -171,8 +162,11 @@ class HomeFragment : BaseFragment(),HomeContract.HomeView{
      */
     override fun showArticalList(homeArticalBean: HomeArticalBean) {
         totalPages = homeArticalBean.data.pageCount
-        homeAdapter?.addData(homeArticalBean.data.datas)
-
+        //防止刷新数据造成重复显示
+        if(curPage == 0)
+            homeAdapter?.setNewData(homeArticalBean.data.datas)
+        if(curPage > 0)
+            homeAdapter?.addData(homeArticalBean.data.datas)
     }
 
     override fun showLoading() {

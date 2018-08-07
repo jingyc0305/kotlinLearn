@@ -25,11 +25,11 @@ import kotlinx.android.synthetic.main.fragment_nav.*
  * @Description:项目列表 通用Fragment
  */
 class ProjectContentFragment : BaseFragment(),HomeProjectContract.ProjectView{
-    private var cid : Int? = null
+    private var cid : Int = 0
     private var mPresenter : ProjectPresenterImpl = ProjectPresenterImpl()
     private var projectAdapter:ProjectsAdapter? = null
     var data:MutableList<ProjectsBean.Data.DataBean>? = null
-    var curPage : Int = 0//默认读取第一页数据
+    private var curPage : Int = 0//默认读取第一页数据
     var totalPages : Int = 0//总页数
     private var errorInfoTv: TextView? = null
     companion object {
@@ -55,8 +55,8 @@ class ProjectContentFragment : BaseFragment(),HomeProjectContract.ProjectView{
         home_project_nav_rv.adapter = projectAdapter
         //设置脚部布局
         //重试加载数据点击事件 同刷新
-        netErrorView?.setOnClickListener { onFailedOrEmptyRetry() }
-        dataEmptyView?.setOnClickListener { onFailedOrEmptyRetry() }
+        netErrorView?.setOnClickListener { initData() }
+        dataEmptyView?.setOnClickListener { initData() }
         //设置item点击事件 进入详情
         projectAdapter?.setOnItemClickListener { _, _, position ->
             var intent = Intent(activity, ArticalDetailActivity::class.java)
@@ -71,7 +71,7 @@ class ProjectContentFragment : BaseFragment(),HomeProjectContract.ProjectView{
             setRefreshFooter(ClassicsFooter(activity!!).setSpinnerStyle(SpinnerStyle.Scale))
             //设置 刷新监听
             project_refreshLayout.setOnRefreshListener { refresh ->
-                mPresenter.getProjectLists(0,cid!!)
+                mPresenter.getProjectLists(0,cid)
                 refresh.setNoMoreData(false)
                 curPage = 0
                 refresh.finishRefresh(2000,true)//传入false表示刷新失败
@@ -79,12 +79,13 @@ class ProjectContentFragment : BaseFragment(),HomeProjectContract.ProjectView{
             project_refreshLayout.setOnLoadMoreListener { refresh ->
                 //refresh.finishLoadMore(2000/*,false*/)//传入false表示加载失败
                 curPage++
-                if(curPage <= totalPages-1){
+                if(curPage < totalPages){
                     mPresenter.getProjectLists(curPage,cid!!)
                     refresh.finishLoadMore(1000,true,false)
-                }else if(curPage == totalPages-2){
+                }else {
                     mPresenter.getProjectLists(curPage,cid!!)
                     //如果是最后一页了
+                    refresh.finishLoadMore(1000,true,true)
                     refresh.finishLoadMoreWithNoMoreData()
                 }
 
@@ -95,19 +96,19 @@ class ProjectContentFragment : BaseFragment(),HomeProjectContract.ProjectView{
     override fun createPresenters(): Array<out BasePresenter<*>>? {
         return arrayOf(mPresenter)
     }
-    private fun onFailedOrEmptyRetry() {
-        initData()
-    }
-
     override fun initData() {
-        mPresenter.getProjectLists(0,cid!!)
+        mPresenter.getProjectLists(curPage,cid)
     }
     override fun showTrees(mProjects: MutableList<ProjectTreeBean.Data>) {
     }
 
     override fun showProjectsList(mProjectsBean: ProjectsBean) {
         totalPages = mProjectsBean.data.pageCount
-        projectAdapter?.addData(mProjectsBean.data.datas)
+        //防止数据重复显示
+        if(curPage == 0)
+            projectAdapter?.setNewData(mProjectsBean.data.datas)
+        if(curPage > 0)
+            projectAdapter?.addData(mProjectsBean.data.datas)
     }
 
     override fun showLoading() {

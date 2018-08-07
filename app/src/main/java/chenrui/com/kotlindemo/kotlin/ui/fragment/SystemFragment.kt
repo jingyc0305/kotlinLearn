@@ -20,6 +20,7 @@ class SystemFragment : BaseFragment(){
     }
 
     override fun initView() {
+
     }
 
     override fun initData() {

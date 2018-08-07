@@ -2,34 +2,33 @@ package chenrui.com.kotlindemo.kotlin.ui.activity
 
 import android.os.Bundle
 import android.support.v4.app.FragmentTransaction
+import android.view.View
 import chenrui.com.kotlindemo.R
 import chenrui.com.kotlindemo.kotlin.base.BaseActivity
-import chenrui.com.kotlindemo.kotlin.base.BasePresenter
 import chenrui.com.kotlindemo.kotlin.bean.ProjectTreeBean
 import chenrui.com.kotlindemo.kotlin.bean.ProjectsBean
 import chenrui.com.kotlindemo.kotlin.bean.TabEntites
 import chenrui.com.kotlindemo.kotlin.mpc.contract.HomeProjectContract
-import chenrui.com.kotlindemo.kotlin.mpc.presenter.ProjectPresenterImpl
 import chenrui.com.kotlindemo.kotlin.ui.fragment.*
 import com.alibaba.android.arouter.facade.annotation.Route
 import com.flyco.tablayout.listener.CustomTabEntity
 import com.flyco.tablayout.listener.OnTabSelectListener
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.toolbar_layout.*
 
 /**
  * 主界面
  */
 @Route(path = "/home/mian")
-class MainActivity: BaseActivity(),HomeProjectContract.ProjectView{
-    private val mTitles = arrayOf("首页","导航","项目","体系","我")
+class MainActivity : BaseActivity(), HomeProjectContract.ProjectView {
+    private val mTitles = arrayOf("首页", "导航", "项目", "体系", "我")
     private val mTabs = ArrayList<CustomTabEntity>()
-    private var mHomeFragment:HomeFragment?=null
-    private var mNaviFragment:NaviFragment?=null
-    private var mProjectFragment:ProjectFragment?=null
-    private var mSystemFragment:SystemFragment?=null
-    private var mPersionalFragment:PersionalFragment?=null
+    private var mHomeFragment: HomeFragment? = null
+    private var mNaviFragment: NaviFragment? = null
+    private var mProjectFragment: ProjectFragment? = null
+    private var mSystemFragment: SystemFragment? = null
+    private var mPersionalFragment: PersionalFragment? = null
 
-    private var mProjectPresenter: ProjectPresenterImpl = ProjectPresenterImpl()
     private var mProjects: MutableList<ProjectTreeBean.Data>? = null
     // 未选中的图标
     private val mIconUnSelectIds = intArrayOf(
@@ -54,7 +53,6 @@ class MainActivity: BaseActivity(),HomeProjectContract.ProjectView{
     override fun initLayoutResId() = R.layout.activity_main
 
     override fun initData() {
-        mProjectPresenter.getProjectTrees()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,17 +61,24 @@ class MainActivity: BaseActivity(),HomeProjectContract.ProjectView{
             //防止fragment重新添加
             mHomeFragment = supportFragmentManager.findFragmentByTag("home") as HomeFragment
             mNaviFragment = supportFragmentManager.findFragmentByTag("nav") as NaviFragment
-            mProjectFragment = supportFragmentManager.findFragmentByTag("project") as ProjectFragment
+            mProjectFragment =
+                    supportFragmentManager.findFragmentByTag("project") as ProjectFragment
             mSystemFragment = supportFragmentManager.findFragmentByTag("system") as SystemFragment
-            mPersionalFragment = supportFragmentManager.findFragmentByTag("personal") as PersionalFragment
+            mPersionalFragment =
+                    supportFragmentManager.findFragmentByTag("personal") as PersionalFragment
         }
         super.onCreate(savedInstanceState)
         initTab()
         tab_layout.currentTab = mSelectIndex
         swichFragment(mSelectIndex)
     }
+
     override fun initView() {
-        mProjectPresenter.attachView(this)
+        //设置标题栏 不显示右侧和左侧
+        //toolbar.title = mTitles[mSelectIndex]
+        toolbar_title_tv.text = mTitles[mSelectIndex]
+        toolbar_back_iv.visibility = View.GONE
+        toolbar_right_tv.visibility = View.GONE
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
@@ -84,56 +89,55 @@ class MainActivity: BaseActivity(),HomeProjectContract.ProjectView{
         super.onSaveInstanceState(outState)
     }
 
-    override fun createPresenters(): Array<out BasePresenter<*>>? {
-        return arrayOf(mProjectPresenter)
-    }
-    private fun swichFragment(index : Int) {
+
+    private fun swichFragment(index: Int) {
         val mTransaction = supportFragmentManager.beginTransaction()
         hideFragments(mTransaction)
-        when(index){
+        when (index) {
             0 -> mHomeFragment?.let {
                 mTransaction.show(it)
-            }?:HomeFragment.getInstance(mTitles[index]).let {
+            } ?: HomeFragment.getInstance(mTitles[index]).let {
                 mHomeFragment = it
-                mTransaction.add(R.id.fl_container,it,"home")
+                mTransaction.add(R.id.fl_container, it, "home")
             }
             1 -> mNaviFragment?.let {
                 mTransaction.show(it)
-            }?:NaviFragment.getInstance(mTitles[1]).let {
+            } ?: NaviFragment.getInstance(mTitles[1]).let {
                 mNaviFragment = it
-                mTransaction.add(R.id.fl_container,it,"nav")
+                mTransaction.add(R.id.fl_container, it, "nav")
             }
             2 -> mProjectFragment?.let {
                 mTransaction.show(it)
-            }?: mProjects?.let {
-                ProjectFragment.getInstance(mTitles[2], it).let {
-                    mProjectFragment = it
-                    mTransaction.add(R.id.fl_container,it,"project")
-                }
+            } ?: ProjectFragment.getInstance(mTitles[2]).let {
+                mProjectFragment = it
+                mTransaction.add(R.id.fl_container, it, "project")
             }
+
             3 -> mSystemFragment?.let {
                 mTransaction.show(it)
-            }?:SystemFragment.getInstance(mTitles[3]).let {
+            } ?: SystemFragment.getInstance(mTitles[3]).let {
                 mSystemFragment = it
-                mTransaction.add(R.id.fl_container,it,"system")
+                mTransaction.add(R.id.fl_container, it, "system")
             }
             4 -> mPersionalFragment?.let {
                 mTransaction.show(it)
-            }?:PersionalFragment.getInstance(mTitles[4]).let {
+            } ?: PersionalFragment.getInstance(mTitles[4]).let {
                 mPersionalFragment = it
-                mTransaction.add(R.id.fl_container,it,"personal")
+                mTransaction.add(R.id.fl_container, it, "personal")
             }
-            else ->{
+            else -> {
 
             }
+
         }
         mSelectIndex = index
         tab_layout.currentTab = mSelectIndex
+        toolbar_title_tv.text = mTitles[index]
         mTransaction.commitAllowingStateLoss()
     }
 
     private fun initTab() {
-        (0 until mTitles.size).mapTo(mTabs){
+        (0 until mTitles.size).mapTo(mTabs) {
             TabEntites(
                 mTitles[it],
                 mIconSelectIds[it],
@@ -141,7 +145,7 @@ class MainActivity: BaseActivity(),HomeProjectContract.ProjectView{
             )
         }
         tab_layout.setTabData(mTabs)
-        tab_layout.setOnTabSelectListener(object : OnTabSelectListener{
+        tab_layout.setOnTabSelectListener(object : OnTabSelectListener {
             override fun onTabReselect(position: Int) {
                 swichFragment(position)
             }
@@ -152,13 +156,15 @@ class MainActivity: BaseActivity(),HomeProjectContract.ProjectView{
         })
 
     }
-    private fun hideFragments(mTransaction : FragmentTransaction){
+
+    private fun hideFragments(mTransaction: FragmentTransaction) {
         mHomeFragment?.let { mTransaction.hide(it) }
         mNaviFragment?.let { mTransaction.hide(it) }
         mProjectFragment?.let { mTransaction.hide(it) }
         mSystemFragment?.let { mTransaction.hide(it) }
         mPersionalFragment?.let { mTransaction.hide(it) }
     }
+
     override fun showTrees(mProjects: MutableList<ProjectTreeBean.Data>) {
         this.mProjects = mProjects
     }
@@ -169,10 +175,7 @@ class MainActivity: BaseActivity(),HomeProjectContract.ProjectView{
     override fun showEmptyView() {
     }
 
-    override fun showErrorView(msg: String,errorcode:Int) {
+    override fun showErrorView(msg: String, errorcode: Int) {
     }
-    override fun onDestroy() {
-        super.onDestroy()
-        mProjectPresenter.detachView()
-    }
+
 }

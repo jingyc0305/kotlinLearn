@@ -23,12 +23,12 @@ class ProjectFragment : BaseFragment(), HomeProjectContract.ProjectView {
     private var mProjectPresenter: ProjectPresenterImpl = ProjectPresenterImpl()
     private var mProjects: MutableList<ProjectTreeBean.Data>? = null
     private var mPCFragment:ProjectContentFragment?=null
+    var data:MutableList<ProjectTreeBean.Data>? = null
     companion object {
-        fun getInstance(title: String,mProjects:MutableList<ProjectTreeBean.Data>): ProjectFragment {
+        fun getInstance(title: String): ProjectFragment {
             val fragment = ProjectFragment()
             val bundle = Bundle()
             fragment.mTitle = title
-            fragment.mProjects = mProjects
             fragment.arguments = bundle
             return fragment
         }
@@ -41,37 +41,12 @@ class ProjectFragment : BaseFragment(), HomeProjectContract.ProjectView {
     override fun initView() {
         //绑定view
         mProjectPresenter.attachView(this)
-        mProjects?.let {
-            for ((index, value) in it.withIndex()) {
-                tabList.add(value.name)
-                fragmentlists.add(ProjectContentFragment.getInstance(value.id))
-            }
-            project_viewpager?.adapter =
-                    InnerPagerAdapter(childFragmentManager, fragmentlists,tabList.toTypedArray())
-            project_tab_layout?.setViewPager(project_viewpager)
-            project_viewpager?.offscreenPageLimit = tabList.size
-        }
     }
 
     override fun initData() {
+        project_tab_layout.visibility = View.GONE
         mProjectPresenter.getProjectTrees()
     }
-
-    override fun showTrees(mProjects: MutableList<ProjectTreeBean.Data>) {
-        //如果预加载分类失败的话 可能由于网络问题 这里会在当前页面重新主动获取一次 然后刷新页面
-        error_layout.visibility = View.GONE
-        if(this.mProjects == null || this.mProjects!!.size == 0){
-            for ((index, value) in mProjects.withIndex()) {
-                tabList.add(value.name)
-                mPCFragment = ProjectContentFragment.getInstance(value.id)
-                fragmentlists.add(mPCFragment!!)
-            }
-            project_viewpager?.adapter =
-                    InnerPagerAdapter(childFragmentManager, fragmentlists,tabList.toTypedArray())
-            project_tab_layout?.setViewPager(project_viewpager)
-        }
-    }
-
     internal inner class InnerPagerAdapter(
         fm: FragmentManager,
         fragments: ArrayList<Fragment>,
@@ -106,12 +81,27 @@ class ProjectFragment : BaseFragment(), HomeProjectContract.ProjectView {
     override fun createPresenters(): Array<out BasePresenter<*>>? {
         return arrayOf(mProjectPresenter)
     }
+    override fun showTrees(mProjects: MutableList<ProjectTreeBean.Data>) {
+        //如果预加载分类失败的话 可能由于网络问题 这里会在当前页面重新主动获取一次 然后刷新页面
+        error_layout.visibility = View.GONE
+        this.mProjects = mProjects
+    }
     override fun showProjectsList(mProjectsBean: ProjectsBean) {
-
+        project_tab_layout.visibility = View.VISIBLE
+        for(treeBean in this.mProjects!!){
+            tabList.add(treeBean.name)
+            mPCFragment = ProjectContentFragment.getInstance(treeBean.id)
+            fragmentlists.add(mPCFragment!!)
+        }
+        project_viewpager?.adapter =
+                InnerPagerAdapter(childFragmentManager, fragmentlists,tabList.toTypedArray())
+        project_tab_layout?.setViewPager(project_viewpager)
+        //配合懒加载机制 解决切换多个后回到加载过的fragment显示空白问题
+        project_viewpager?.offscreenPageLimit = tabList.size-1
     }
 
     override fun showEmptyView() {
-        error_layout.visibility = View.VISIBLE
+        //empty_layout.visibility = View.VISIBLE
     }
 
     override fun showErrorView(msg: String,errorcode:Int) {
@@ -119,9 +109,13 @@ class ProjectFragment : BaseFragment(), HomeProjectContract.ProjectView {
     }
 
     override fun showLoading() {
+        //loading_layout.visibility = View.VISIBLE
     }
 
     override fun hideLoading() {
+        //empty_layout.visibility = View.GONE
+        error_layout.visibility = View.GONE
+        //loading_layout.visibility = View.GONE
     }
 
     override fun onDestroy() {

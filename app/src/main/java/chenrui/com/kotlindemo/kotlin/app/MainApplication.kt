@@ -4,11 +4,16 @@ import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.os.Bundle
+import android.support.v7.widget.Toolbar
+import android.widget.ImageView
 import chenrui.com.baselib.AppConfig
 import chenrui.com.baselib.BaseApp
+import chenrui.com.kotlindemo.R
+import chenrui.com.kotlindemo.kotlin.base.BaseActivity
 import com.alibaba.android.arouter.launcher.ARouter
 import com.orhanobut.logger.AndroidLogAdapter
 import com.orhanobut.logger.PrettyFormatStrategy
+import java.util.*
 import kotlin.properties.Delegates
 
 
@@ -52,8 +57,10 @@ class MainApplication: BaseApp() {
         var context : Context by Delegates.notNull()
             private set
     }
+    var activitys:LinkedList<Activity>? = null
     override fun onCreate() {
         super.onCreate()
+        activitys = LinkedList()
         context = applicationContext
         // 初始化 ARouter
         if (chenrui.com.kotlindemo.BuildConfig.DEBUG) {
@@ -95,8 +102,27 @@ class MainApplication: BaseApp() {
         })
     }
 
+    /**
+     * 监听每一个activity的生命周期
+     */
     private var mActivityLifecycleCallbacks = object : ActivityLifecycleCallbacks{
         override fun onActivityPaused(p0: Activity?) {
+            //注册所有的activity
+            activitys?.add(p0!!)
+            //全局配置toolbar
+            var toolbar = p0?.findViewById(R.id.toolbar) as Toolbar
+            toolbar?.let {
+                when(p0){
+                    is BaseActivity -> p0?.setSupportActionBar(toolbar)
+                }
+                (p0 as BaseActivity)?.supportActionBar?.setDisplayShowTitleEnabled(false)
+            }
+            var backIv = p0?.findViewById(R.id.toolbar_back_iv) as ImageView
+            backIv.setOnClickListener { p0.finish() }
+            //设置右侧内容是否显示
+            //设置左侧内容是否显示
+            //设置是否使用沉浸式状态栏
+
         }
 
         override fun onActivityResumed(p0: Activity?) {
@@ -117,5 +143,14 @@ class MainApplication: BaseApp() {
         override fun onActivityCreated(p0: Activity?, p1: Bundle?) {
         }
 
+    }
+
+    /**
+     * 全局退出app
+     */
+    fun exitApp(){
+        for (act in activitys!!){
+            act.finish()
+        }
     }
 }

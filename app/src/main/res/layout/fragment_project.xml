@@ -20,8 +20,8 @@
         tl:tl_tab_padding="20dp"
         tl:tl_tab_space_equal="true"
         tl:tl_indicator_corner_radius="5dp"
-        tl:tl_indicator_color="@color/colorPrimary"
-        tl:tl_textSelectColor="@color/colorPrimary"
+        tl:tl_indicator_color="@color/color_black"
+        tl:tl_textSelectColor="@color/color_black"
         tl:tl_textUnselectColor="#66000000">
 
 
